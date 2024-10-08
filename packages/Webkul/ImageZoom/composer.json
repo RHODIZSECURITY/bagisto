@@ -1,0 +1,26 @@
+{
+    "name": "bagisto/imagezoom-extension",
+    "license": "MIT",
+    "description" : "Enhance your customer's shopping experience with our Product Image Zoom Extension for Bagisto. This extension allows users to see a magnified view of the product image on hover, providing a detailed and interactive visual of the product.",
+    "authors": [
+        {
+            "name": "Kishan Kanani",
+            "email": "kishan.kanani@brainstream.tech"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Webkul\\ImageZoom\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Webkul\\ImageZoom\\Providers\\ImageZoomServiceProvider"
+            ],
+            "aliases": {}
+        }
+    },
+    "minimum-stability": "dev"
+}

@@ -95,6 +95,8 @@
             "Webkul\\Tax\\": "packages/Webkul/Tax/src",
             "Webkul\\Theme\\": "packages/Webkul/Theme/src",
             "Webkul\\User\\": "packages/Webkul/User/src",
+            "Webkul\\Suggestion\\": "packages/Webkul/Suggestion/src",
+            "Webkul\\ImageZoom\\": "packages/Webkul/ImageZoom/src",
             "Rhodiz\\Stripe\\": "packages/Rhodiz/Stripe/src",
             "Rhodiz\\Usps\\": "packages/Rhodiz/Usps/src"
         }
