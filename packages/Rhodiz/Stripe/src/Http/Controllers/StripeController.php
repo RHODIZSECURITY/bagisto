@@ -61,7 +61,7 @@ class StripeController extends Controller
         'price_data' => [
           'currency' => $cart->global_currency_code,
           'product_data' => [
-            'name' => 'Stripe Checkout Payment order id - ' . $cart->id,
+            'name' => 'Vaqueras ala Moda Checkout Payment',
           ],
           'unit_amount' => $total_amount * 100,
         ],
