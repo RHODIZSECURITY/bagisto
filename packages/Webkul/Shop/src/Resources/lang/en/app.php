@@ -436,7 +436,7 @@ return [
                 'footer-content'         => 'Footer Content',
                 'footer-text'            => '© Copyright 2020 - :current_year, Rhodiz IT. All rights reserved.',
                 'locale'                 => 'Locale',
-                'newsletter-text'        => 'Get Ready for our Fun Newsletter!',
+                'newsletter-text'        => 'Subscribe to receive exclusive offers!',
                 'order-return'           => 'Order and Returns',
                 'payment-policy'         => 'Payment Policy',
                 'privacy-cookies-policy' => 'Privacy and Cookies Policy',
