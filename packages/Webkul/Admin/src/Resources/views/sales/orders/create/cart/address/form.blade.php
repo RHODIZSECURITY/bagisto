@@ -35,7 +35,7 @@
                     </x-admin::form.control-group.label>
 
                     <x-admin::form.control-group.control
-                        type="text"
+                        type="hidden"
                         ::name="controlName + '.vat_id'"
                         ::value="address.vat_id"
                         :label="trans('admin::app.sales.orders.create.cart.address.vat-id')"

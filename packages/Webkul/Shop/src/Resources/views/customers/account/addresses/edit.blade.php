@@ -144,7 +144,7 @@
                     </x-shop::form.control-group.label>
 
                     <x-shop::form.control-group.control
-                        type="text"
+                        type="hidden"
                         name="vat_id"
                         :value="old('vat_id') ?? $address->vat_id"
                         :label="trans('shop::app.customers.account.addresses.edit.vat-id')"
