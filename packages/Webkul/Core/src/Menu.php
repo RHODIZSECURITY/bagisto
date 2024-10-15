@@ -63,7 +63,7 @@ class Menu
                 $canShowWishlist = ! (bool) core()->getConfigData('customer.settings.wishlist.wishlist_option');
 
                 $this->configMenu = $configMenu
-                    ->reject(fn ($item) => $item['key'] == 'account.wishlist' && $canShowWishlist)
+                    ->reject(fn ($item) =>  ($item['key'] == 'account.wishlist' && $canShowWishlist) || ($item['key'] == 'account.downloadables') )
                     ->toArray();
                 break;
 
