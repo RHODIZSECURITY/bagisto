@@ -77,7 +77,7 @@
                                 </x-admin::form.control-group.label>
 
                                 <x-admin::form.control-group.control
-                                    type="text"
+                                    type="hidden"
                                     name="vat_id"
                                     :label="trans('admin::app.customers.customers.view.address.create.vat-id')"
                                     :placeholder="trans('admin::app.customers.customers.view.address.create.vat-id')"
