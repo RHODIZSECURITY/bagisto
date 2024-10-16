@@ -16,7 +16,7 @@ class UspsFlat extends AbstractShipping
      */
     protected $code  = 'usps_flat';
 
-    public function calculate()
+    public function calculate1()
     {
         $cart = Cart::getCart();
 
@@ -33,8 +33,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate->price = 0;
             $cartShippingRate->base_price = 0;
             $cartShippingRate->error_message = 'Su carrito está vacío. Por favor, añada productos para continuar.';
-
-            return [$cartShippingRate];
+            return [/*$cartShippingRate*/];
         }
 
         $totalWeight = 0;
@@ -47,7 +46,7 @@ class UspsFlat extends AbstractShipping
         if ($totalWeight <= 0) {
             // Handle invalid weight
             // Retorna un mensaje indicando que el peso es inválido
-            $cartShippingRate = new CartShippingRate;
+            /*$cartShippingRate = new CartShippingRate;
 
             $cartShippingRate->carrier = $this->getCode();
             $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
@@ -57,8 +56,8 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate->price = 0;
             $cartShippingRate->base_price = 0;
             $cartShippingRate->error_message = 'El peso de los productos en el carrito no es válido. Por favor, verifique los detalles de los productos.';
-
-            return [$cartShippingRate];
+            */
+            return [/*$cartShippingRate*/];
         }
 
         $weight = $totalWeight; // in pounds
@@ -139,7 +138,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate->base_price = 0;
             $cartShippingRate->error_message = 'The total weight of your order exceeds the maximum limit. Please adjust your cart or contact support.';
 
-            return [$cartShippingRate];
+            return [/*$cartShippingRate*/];
         }
 
         // Sort services by lowest cost
@@ -149,21 +148,22 @@ class UspsFlat extends AbstractShipping
 
         $result = [];
 
-        $result = [];
-
         // Prepara las tarifas como objetos CartShippingRate
         foreach ($services as $service) {
-            $cartShippingRate = new CartShippingRate;
+            //Los servicios con costo cero no se tendran en cuenta
+            if ($service['cost'] > 0) {
+                $cartShippingRate = new CartShippingRate;
 
-            $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
-            $cartShippingRate->method = Str::slug($service['name'], '_');
-            $cartShippingRate->method_title = $service['name'] . " - " . $totalWeight. " lbs";
-            $cartShippingRate->method_description = $service['delivery'];
-            $cartShippingRate->price = $service['cost'];
-            $cartShippingRate->base_price = $service['cost'];
+                $cartShippingRate->carrier = $this->getCode();
+                $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
+                $cartShippingRate->method = Str::slug($service['name'], '_');
+                $cartShippingRate->method_title = $service['name'] . " - (" . $totalWeight. " lbs)";
+                $cartShippingRate->method_description = $service['delivery'];
+                $cartShippingRate->price = $service['cost'];
+                $cartShippingRate->base_price = $service['cost'];
 
-            $result[] = $cartShippingRate;
+                $result[] = $cartShippingRate;
+            }
         }
 
         return $result;
@@ -182,28 +182,6 @@ class UspsFlat extends AbstractShipping
     ];
 
     /**
-     * get the allowed services
-     *
-     * @return $allowed_services
-     */
-    public function getServices()
-    {
-        $allowed_services = [];
-
-        $config_services = core()->getConfigData('sales.carriers.usps.services');
-
-        $services = explode(",", $config_services);
-
-        foreach ($services as $service_code) {
-            if (isset($this->services[$service_code])) {
-                $allowed_services[$service_code] = $this->services[$service_code];
-            }
-        }
-
-        return $allowed_services;
-    }
-
-    /**
      * Checks if payment method is available
      *
      * @return array
@@ -211,5 +189,154 @@ class UspsFlat extends AbstractShipping
     public function isAvailable()
     {
         return core()->getConfigData('sales.carriers.usps_flat.active');
+    }
+
+
+
+
+    public function calculate()
+    {
+        $cart = Cart::getCart();
+
+        if (!$cart || !$cart->items->count()) {
+            // Handle empty cart
+            $cartShippingRate = new CartShippingRate;
+
+            $cartShippingRate->carrier = $this->getCode();
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Optimized Flat Rate Shipping';
+            $cartShippingRate->method = 'no_shipping';
+            $cartShippingRate->method_title = 'Empty Cart';
+            $cartShippingRate->method_description = 'There are no products in the cart.';
+            $cartShippingRate->price = 0;
+            $cartShippingRate->base_price = 0;
+            $cartShippingRate->error_message = 'Your cart is empty. Please add products to continue.';
+
+            return [$cartShippingRate];
+        }
+
+        // Define weight classification thresholds (in lbs)
+        $lightWeightThreshold = 0.5;  // <= 0.5 lbs is light
+        $mediumWeightThreshold = 1.5; // 0.51 - 1.5 lbs is medium
+        // > 1.5 lbs is heavy
+
+        // Define capacity for each package type
+        $flatRateEnvelopeCapacityLight = 5;   // Can hold 5 lightweight items
+        $flatRateEnvelopeCapacityMedium = 3;  // Can hold 3 medium items
+
+        $flatRateSmallBoxCapacityLight = 10;  // Can hold 10 lightweight items
+        $flatRateSmallBoxCapacityMedium = 5;  // Can hold 5 medium items
+        $flatRateSmallBoxCapacityHeavy = 2;   // Can hold 2 heavy items
+
+        $flatRateMediumBoxCapacity = 15;      // Can hold 15 mixed items (light, medium, heavy)
+        $flatRateLargeBoxCapacity = 25;       // Can hold 25 mixed items (light, medium, heavy)
+
+        // Classify items in the cart
+        $lightItems = 0;
+        $mediumItems = 0;
+        $heavyItems = 0;
+
+        foreach ($cart->items as $item) {
+            $weight = $item->weight;
+
+            if ($weight <= $lightWeightThreshold) {
+                $lightItems += $item->quantity;
+            } elseif ($weight <= $mediumWeightThreshold) {
+                $mediumItems += $item->quantity;
+            } else {
+                $heavyItems += $item->quantity;
+            }
+        }
+
+        // Calculate how many envelopes or boxes are needed for each classification
+        $numEnvelopesLight = ceil($lightItems / $flatRateEnvelopeCapacityLight);
+        $numEnvelopesMedium = ceil($mediumItems / $flatRateEnvelopeCapacityMedium);
+
+        $numSmallBoxesLight = ceil($lightItems / $flatRateSmallBoxCapacityLight);
+        $numSmallBoxesMedium = ceil($mediumItems / $flatRateSmallBoxCapacityMedium);
+        $numSmallBoxesHeavy = ceil($heavyItems / $flatRateSmallBoxCapacityHeavy);
+
+        $numMediumBoxes = ceil(($lightItems + $mediumItems + $heavyItems) / $flatRateMediumBoxCapacity);
+        $numLargeBoxes = ceil(($lightItems + $mediumItems + $heavyItems) / $flatRateLargeBoxCapacity);
+
+        // Calculate total shipping cost based on the required number of envelopes and boxes
+        $configPath = 'shipping.uspsoptimizedflatrate.service_rates';
+
+        $envelopeBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_envelope") ?: 9.65;
+        $smallBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_small_box") ?: 10.20;
+        $mediumBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_medium_flat_rate_box") ?: 17.10;
+        $largeBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_large_flat_rate_box") ?: 22.80;
+        $firstClassBaseCost = core()->getConfigData("{$configPath}.first_class_package_service") ?: 5.50;
+
+        $envelopeTotalCost = ($numEnvelopesLight + $numEnvelopesMedium) * $envelopeBaseCost;
+        $smallBoxTotalCost = ($numSmallBoxesLight + $numSmallBoxesMedium + $numSmallBoxesHeavy) * $smallBoxBaseCost;
+        $mediumBoxTotalCost = $numMediumBoxes * $mediumBoxBaseCost;
+        $largeBoxTotalCost = $numLargeBoxes * $largeBoxBaseCost;
+        $firstClassTotalCost = ($lightItems) * $firstClassBaseCost; // Only light items qualify for first-class
+
+        $services = [];
+
+        // Add the calculated rates to the services array
+        $services[] = [
+            'name'     => 'Priority Mail Flat Rate Envelope',
+            'cost'     => $envelopeTotalCost,
+            'delivery' => '1-3 business days',
+        ];
+
+        $services[] = [
+            'name'     => 'Priority Mail Flat Rate Small Box',
+            'cost'     => $smallBoxTotalCost,
+            'delivery' => '1-3 business days',
+        ];
+
+        if (($lightItems + $mediumItems + $heavyItems) > 1) {
+            $services[] = [
+                'name'     => 'Priority Mail Medium Flat Rate Box',
+                'cost'     => $mediumBoxTotalCost,
+                'delivery' => '1-3 business days',
+            ];
+        }
+
+        if (($lightItems + $mediumItems + $heavyItems) > 1) {
+            $services[] = [
+                'name'     => 'Priority Mail Large Flat Rate Box',
+                'cost'     => $largeBoxTotalCost,
+                'delivery' => '1-3 business days',
+            ];
+        }
+
+        if ($lightItems > 0 && $mediumItems == 0 && $heavyItems == 0) {
+            $services[] = [
+                'name'     => 'First-Class Package Service',
+                'cost'     => $firstClassTotalCost,
+                'delivery' => '1-5 business days',
+            ];
+        }
+
+        // Sort services by lowest cost
+        usort($services, function ($a, $b) {
+            return $a['cost'] <=> $b['cost'];
+        });
+
+        // Limit to top 3 cheapest options
+        //$services = array_slice($services, 0, 3);
+
+        $result = [];
+
+        // Prepare rates as CartShippingRate objects
+        foreach ($services as $service) {
+            $cartShippingRate = new CartShippingRate;
+
+            $cartShippingRate->carrier = $this->getCode();
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Optimized Flat Rate Shipping';
+            $cartShippingRate->method = Str::slug($service['name'], '_');
+            $cartShippingRate->method_title = $service['name'];
+            $cartShippingRate->method_description = $service['delivery'];
+            $cartShippingRate->price = $service['cost'];
+            $cartShippingRate->base_price = $service['cost'];
+
+            $result[] = $cartShippingRate;
+        }
+
+        return $result;
     }
 }

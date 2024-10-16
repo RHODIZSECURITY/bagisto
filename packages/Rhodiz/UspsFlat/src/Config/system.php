@@ -38,7 +38,7 @@ return [
 
             // First-Class Package Service
             [
-                'name'       => 'first_class_package_service_0_1_lb',
+                'name'       => 'first_class_package_service',
                 'title'      => 'First-Class Package Service (0 - 1 lb)',
                 'type'       => 'number',
                 'validation' => 'required|min:0',
@@ -46,83 +46,53 @@ return [
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-            // USPS Retail Ground
-            [
-                'name'       => 'usps_retail_ground_0_1_lb',
-                'title'      => 'USPS Retail Ground (0 - 1 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 8.80,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
-            [
-                'name'       => 'usps_retail_ground_1_5_lb',
-                'title'      => 'USPS Retail Ground (1 - 5 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 10.50,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
-            [
-                'name'       => 'usps_retail_ground_5_10_lb',
-                'title'      => 'USPS Retail Ground (5 - 10 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 14.50,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
-            [
-                'name'       => 'usps_retail_ground_10_20_lb',
-                'title'      => 'USPS Retail Ground (10 - 20 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 24.50,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
-            // Priority Mail Medium Flat Rate Box
-            [
-                'name'       => 'priority_mail_medium_flat_rate_box_5_10_lb',
-                'title'      => 'Priority Mail Medium Flat Rate Box (5 - 10 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 17.10,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
-            // Priority Mail Large Flat Rate Box
-            [
-                'name'       => 'priority_mail_large_flat_rate_box_10_20_lb',
-                'title'      => 'Priority Mail Large Flat Rate Box (10 - 20 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 22.80,
-                'channel_based' => false,
-                'locale_based'  => false,
-            ],
+
             // Priority Mail Flat Rate Envelope (applies to any weight up to 70 lb)
             [
                 'name'       => 'priority_mail_flat_rate_envelope',
-                'title'      => 'Priority Mail Flat Rate Envelope (applies to any weight up to 70 lb)',
+                'title'      => 'Priority Mail Flat Rate Envelope (up to 70 lb) (31.75 cm x 24.13 cm)',
                 'type'       => 'number',
                 'validation' => 'required|min:0',
                 'default'    => 9.65,
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
+
             // Priority Mail Flat Rate Small Box (applies to any weight up to 70 lb)
             [
                 'name'       => 'priority_mail_flat_rate_small_box',
-                'title'      => 'Priority Mail Flat Rate Small Box (applies to any weight up to 70 lb)',
+                'title'      => 'Priority Mail Flat Rate Small Box (up to 70 lb) (21.91 cm x 13.65 cm x 4.12 cm) o (27.94 cm x 21.59 cm x 13.97 cm)',
                 'type'       => 'number',
                 'validation' => 'required|min:0',
                 'default'    => 10.20,
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
+
+            // NO USPS Retail Ground
+
+            // Priority Mail Medium Flat Rate Box
+            [
+                'name'       => 'priority_mail_medium_flat_rate_box',
+                'title'      => 'Priority Mail Medium Flat Rate Box (up to 70 lb) (27.9 cm x 21.6 cm x 14 cm) o (34.6 cm x 30.2 cm x 8.6 cm)',
+                'type'       => 'number',
+                'validation' => 'required|min:0',
+                'default'    => 17.10,
+                'channel_based' => false,
+                'locale_based'  => false,
+            ],
+
+            // Priority Mail Large Flat Rate Box
+            [
+                'name'       => 'priority_mail_large_flat_rate_box',
+                'title'      => 'Priority Mail Large Flat Rate Box (up to 70 lb) (31.1 cm x 31.1 cm x 15.2 cm)',
+                'type'       => 'number',
+                'validation' => 'required|min:0',
+                'default'    => 22.80,
+                'channel_based' => false,
+                'locale_based'  => false,
+            ],
+
 
         ],
      ],
