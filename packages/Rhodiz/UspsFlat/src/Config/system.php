@@ -3,7 +3,7 @@
 return [
     [
         'key'    => 'sales.carriers.usps_flat',
-        'info'   => 'Usps Flat Rate by Weight - extension created for bagisto by Rhodiz.',
+        'info'   => 'Usps Flat Rate by Weight',
         'name'   => 'Usps Flat Rate by Weight',
         'sort'   => 20,
         'fields' => [
