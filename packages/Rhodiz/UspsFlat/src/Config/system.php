@@ -74,7 +74,7 @@ return [
             // Priority Mail Medium Flat Rate Box
             [
                 'name'       => 'priority_mail_medium_flat_rate_box',
-                'title'      => 'Priority Mail Medium Flat Rate Box (up to 70 lb) (27.9 cm x 21.6 cm x 14 cm) o (34.6 cm x 30.2 cm x 8.6 cm)',
+                'title'      => 'Priority Mail Flat Rate Medium Box (up to 70 lb) (27.9 cm x 21.6 cm x 14 cm) o (34.6 cm x 30.2 cm x 8.6 cm)',
                 'type'       => 'number',
                 'validation' => 'required|min:0',
                 'default'    => 17.10,
@@ -85,14 +85,13 @@ return [
             // Priority Mail Large Flat Rate Box
             [
                 'name'       => 'priority_mail_large_flat_rate_box',
-                'title'      => 'Priority Mail Large Flat Rate Box (up to 70 lb) (31.1 cm x 31.1 cm x 15.2 cm)',
+                'title'      => 'Priority Mail Flat Rate Large Box (up to 70 lb) (31.1 cm x 31.1 cm x 15.2 cm)',
                 'type'       => 'number',
                 'validation' => 'required|min:0',
                 'default'    => 22.80,
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
 
         ],
      ],

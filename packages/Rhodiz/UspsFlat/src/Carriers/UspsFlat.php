@@ -191,9 +191,6 @@ class UspsFlat extends AbstractShipping
         return core()->getConfigData('sales.carriers.usps_flat.active');
     }
 
-
-
-
     public function calculate()
     {
         $cart = Cart::getCart();
@@ -220,20 +217,26 @@ class UspsFlat extends AbstractShipping
         // > 1.5 lbs is heavy
 
         // Define capacity for each package type
-        $flatRateEnvelopeCapacityLight = 5;   // Can hold 5 lightweight items
-        $flatRateEnvelopeCapacityMedium = 3;  // Can hold 3 medium items
+        $flatRateEnvelopeCapacityLight = 4;   // Can hold 5 lightweight items
+        $flatRateEnvelopeCapacityMedium = 2;  // Can hold 3 medium items
 
         $flatRateSmallBoxCapacityLight = 10;  // Can hold 10 lightweight items
-        $flatRateSmallBoxCapacityMedium = 5;  // Can hold 5 medium items
+        $flatRateSmallBoxCapacityMedium = 4;  // Can hold 5 medium items
         $flatRateSmallBoxCapacityHeavy = 2;   // Can hold 2 heavy items
 
-        $flatRateMediumBoxCapacity = 15;      // Can hold 15 mixed items (light, medium, heavy)
-        $flatRateLargeBoxCapacity = 25;       // Can hold 25 mixed items (light, medium, heavy)
+        $flatRateMediumBoxCapacity = 10;      // Can hold 15 mixed items (light, medium, heavy)
+        $flatRateLargeBoxCapacity = 15;       // Can hold 25 mixed items (light, medium, heavy)
 
         // Classify items in the cart
+        $firstClassItems = 0;
         $lightItems = 0;
         $mediumItems = 0;
         $heavyItems = 0;
+
+        $totalWeight = 0;
+        $totalItems = 0;
+
+        $debugString = "";
 
         foreach ($cart->items as $item) {
             $weight = $item->weight;
@@ -245,6 +248,15 @@ class UspsFlat extends AbstractShipping
             } else {
                 $heavyItems += $item->quantity;
             }
+
+            if ($weight <= 1) {
+                $firstClassItems += $item->quantity;
+            }
+
+            $totalWeight += $weight;
+            $totalItems += $item->quantity;
+
+            $debugString .= "{$weight}|";
         }
 
         // Calculate how many envelopes or boxes are needed for each classification
@@ -259,56 +271,66 @@ class UspsFlat extends AbstractShipping
         $numLargeBoxes = ceil(($lightItems + $mediumItems + $heavyItems) / $flatRateLargeBoxCapacity);
 
         // Calculate total shipping cost based on the required number of envelopes and boxes
-        $configPath = 'shipping.uspsoptimizedflatrate.service_rates';
+        $configPath = 'sales.carriers.usps_flat';
 
-        $envelopeBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_envelope") ?: 9.65;
-        $smallBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_small_box") ?: 10.20;
-        $mediumBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_medium_flat_rate_box") ?: 17.10;
-        $largeBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_large_flat_rate_box") ?: 22.80;
-        $firstClassBaseCost = core()->getConfigData("{$configPath}.first_class_package_service") ?: 5.50;
+        $envelopeBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_envelope") ;
+        $smallBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_small_box") ;
+        $mediumBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_medium_flat_rate_box") ;
+        $largeBoxBaseCost = core()->getConfigData("{$configPath}.priority_mail_large_flat_rate_box");
+        $firstClassBaseCost = core()->getConfigData("{$configPath}.first_class_package_service");
 
         $envelopeTotalCost = ($numEnvelopesLight + $numEnvelopesMedium) * $envelopeBaseCost;
         $smallBoxTotalCost = ($numSmallBoxesLight + $numSmallBoxesMedium + $numSmallBoxesHeavy) * $smallBoxBaseCost;
         $mediumBoxTotalCost = $numMediumBoxes * $mediumBoxBaseCost;
         $largeBoxTotalCost = $numLargeBoxes * $largeBoxBaseCost;
-        $firstClassTotalCost = ($lightItems) * $firstClassBaseCost; // Only light items qualify for first-class
 
         $services = [];
 
         // Add the calculated rates to the services array
-        $services[] = [
-            'name'     => 'Priority Mail Flat Rate Envelope',
-            'cost'     => $envelopeTotalCost,
-            'delivery' => '1-3 business days',
-        ];
+        if ($heavyItems == 0) {
+            $services[] = [
+                'name'     => 'Priority Mail Flat Rate Envelope',
+                'cost'     => $envelopeTotalCost,
+                'delivery' => '1-3 business days',
+                'boxes'    => $numEnvelopesLight + $numEnvelopesMedium,
+            ];
+        }
 
+        $numSmallBoxes = $numSmallBoxesLight + $numSmallBoxesMedium + $numSmallBoxesHeavy;
         $services[] = [
             'name'     => 'Priority Mail Flat Rate Small Box',
             'cost'     => $smallBoxTotalCost,
             'delivery' => '1-3 business days',
+            'boxes'    => $numSmallBoxes,
         ];
 
         if (($lightItems + $mediumItems + $heavyItems) > 1) {
             $services[] = [
-                'name'     => 'Priority Mail Medium Flat Rate Box',
+                'name'     => 'Priority Mail Flat Rate Medium Box',
                 'cost'     => $mediumBoxTotalCost,
                 'delivery' => '1-3 business days',
+                'boxes'    => $numMediumBoxes,
             ];
         }
 
         if (($lightItems + $mediumItems + $heavyItems) > 1) {
             $services[] = [
-                'name'     => 'Priority Mail Large Flat Rate Box',
+                'name'     => 'Priority Mail Flat Rate Large Box',
                 'cost'     => $largeBoxTotalCost,
                 'delivery' => '1-3 business days',
+                'boxes'    => $numLargeBoxes,
             ];
         }
 
-        if ($lightItems > 0 && $mediumItems == 0 && $heavyItems == 0) {
+        if ( $firstClassItems == $totalItems) {
+
+            $firstClassTotalCost = ($firstClassItems) * $firstClassBaseCost;
+
             $services[] = [
                 'name'     => 'First-Class Package Service',
                 'cost'     => $firstClassTotalCost,
                 'delivery' => '1-5 business days',
+                'boxes'    => $firstClassItems,
             ];
         }
 
@@ -318,18 +340,25 @@ class UspsFlat extends AbstractShipping
         });
 
         // Limit to top 3 cheapest options
-        //$services = array_slice($services, 0, 3);
+        $services = array_slice($services, 0, 3);
+
+        $numSmallBoxes = $numSmallBoxesLight + $numSmallBoxesMedium + $numSmallBoxesHeavy;
+
+        $debugString .= "{$totalWeight}|{$lightItems}>{$numSmallBoxes}|{$mediumItems}>{$numMediumBoxes}|{$heavyItems}>{$numLargeBoxes}|{$firstClassItems}--*--{$cart->items->count()}";
 
         $result = [];
 
         // Prepare rates as CartShippingRate objects
         foreach ($services as $service) {
+
+            $boxesStr = $service['boxes'] == 1 ? " Box" : " Boxes";
+
             $cartShippingRate = new CartShippingRate;
 
             $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Optimized Flat Rate Shipping';
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
             $cartShippingRate->method = Str::slug($service['name'], '_');
-            $cartShippingRate->method_title = $service['name'];
+            $cartShippingRate->method_title = $service['name'] . PHP_EOL . " (" . $service['boxes'] . $boxesStr . ")";
             $cartShippingRate->method_description = $service['delivery'];
             $cartShippingRate->price = $service['cost'];
             $cartShippingRate->base_price = $service['cost'];
