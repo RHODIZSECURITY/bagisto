@@ -132,7 +132,7 @@ return [
     | (use capital letters!)
     */
 
-    'default_country' => null,
+    'default_country' => 'US',
 
     /*
     |--------------------------------------------------------------------------
