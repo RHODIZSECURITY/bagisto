@@ -1228,7 +1228,7 @@
                                     </label>
     
                                     <span>
-                                        {{  $shipment->track_number }}
+                                        <a href="https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=2&text28777=&tLabels={{  $shipment->track_number }}%2C#" target="_blank" style="color: #0000FF; text-decoration: underline;" >{{  $shipment->track_number }}</a>
                                     </span>
                                 </div>
 
