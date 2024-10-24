@@ -34,65 +34,127 @@ return [
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-            // Service cost configurations for each weight range
-
-            // First-Class Package Service
             [
-                'name'       => 'first_class_package_service',
-                'title'      => 'First-Class Package Service (0 - 1 lb)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 5.50,
+                'name'       => 'USPS_CLIENT_ID',
+                'title'      => 'USPS CLIENT ID',
+                'type'       => 'text',
+                'validation' => 'required_if:active,1|min:5',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
-            // Priority Mail Flat Rate Envelope (applies to any weight up to 70 lb)
             [
-                'name'       => 'priority_mail_flat_rate_envelope',
-                'title'      => 'Priority Mail Flat Rate Envelope (up to 70 lb) (31.75 cm x 24.13 cm)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 9.65,
+                'name'       => 'USPS_CLIENT_SECRET',
+                'title'      => 'USPS CLIENT SECRET',
+                'type'       => 'text',
+                'validation' => 'required_if:active,1|min:5',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
-            // Priority Mail Flat Rate Small Box (applies to any weight up to 70 lb)
             [
-                'name'       => 'priority_mail_flat_rate_small_box',
-                'title'      => 'Priority Mail Flat Rate Small Box (up to 70 lb) (21.91 cm x 13.65 cm x 4.12 cm) o (27.94 cm x 21.59 cm x 13.97 cm)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 10.20,
+                'name'    => 'service_1',
+                'title'   => 'Servicio #1',
+                'type'    => 'select',
+                'options' => [
+                    [
+                        'title' => 'Inactive',
+                        'value' => 'INACTIVE',
+                    ],
+                    [
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
+                    ], [
+                        'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                    ], [
+                        'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
+                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                    ], [
+                        'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
+                        'value' => 'USPS_GROUND_ADVANTAGE',
+                    ]
+                ],
+                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
-            // NO USPS Retail Ground
-
-            // Priority Mail Medium Flat Rate Box
             [
-                'name'       => 'priority_mail_medium_flat_rate_box',
-                'title'      => 'Priority Mail Flat Rate Medium Box (up to 70 lb) (27.9 cm x 21.6 cm x 14 cm) o (34.6 cm x 30.2 cm x 8.6 cm)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 17.10,
+                'name'    => 'service_2',
+                'title'   => 'Servicio #2',
+                'type'    => 'select',
+                'options' => [
+                    [
+                        'title' => 'Inactive',
+                        'value' => 'INACTIVE',
+                    ],[
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
+                    ], [
+                        'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                    ], [
+                        'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
+                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                    ], [
+                        'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
+                        'value' => 'USPS_GROUND_ADVANTAGE',
+                    ]
+                ],
+                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
-            // Priority Mail Large Flat Rate Box
             [
-                'name'       => 'priority_mail_large_flat_rate_box',
-                'title'      => 'Priority Mail Flat Rate Large Box (up to 70 lb) (31.1 cm x 31.1 cm x 15.2 cm)',
-                'type'       => 'number',
-                'validation' => 'required|min:0',
-                'default'    => 22.80,
+                'name'    => 'service_3',
+                'title'   => 'Servicio #3',
+                'type'    => 'select',
+                'options' => [
+                    [
+                        'title' => 'Inactive',
+                        'value' => 'INACTIVE',
+                    ],[
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
+                    ], [
+                        'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                    ], [
+                        'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
+                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                    ], [
+                        'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
+                        'value' => 'USPS_GROUND_ADVANTAGE',
+                    ]
+                ],
+                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
-
+            [
+                'name'    => 'service_4',
+                'title'   => 'Servicio #4',
+                'type'    => 'select',
+                'options' => [
+                    [
+                        'title' => 'Inactive',
+                        'value' => 'INACTIVE',
+                    ],[
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
+                    ], [
+                        'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                    ], [
+                        'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
+                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                    ], [
+                        'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
+                        'value' => 'USPS_GROUND_ADVANTAGE',
+                    ]
+                ],
+                //'validation'    => 'required_if:active,1',
+                'channel_based' => false,
+                'locale_based'  => false,
+            ]
         ],
      ],
 ];

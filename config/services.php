@@ -79,4 +79,9 @@ return [
         'client_secret' => env('GITHUB_CLIENT_SECRET'),
         'redirect'      => env('GITHUB_CALLBACK_URL'),
     ],
+
+    'usps' => [
+        'client_id'     => env('USPS_CLIENT_ID'),
+        'client_secret' => env('USPS_CLIENT_SECRET'),
+    ],
 ];

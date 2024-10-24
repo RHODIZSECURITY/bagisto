@@ -2,10 +2,14 @@
 
 namespace Rhodiz\UspsFlat\Carriers;
 
+use DateTime;
 use Webkul\Shipping\Carriers\AbstractShipping;
 use Webkul\Checkout\Models\CartShippingRate;
 use Webkul\Checkout\Facades\Cart;
 use Illuminate\Support\Str;
+use Rhodiz\UspsFlat\Helpers\USPSPriceRates;
+use Webkul\Product\Models\Product;
+use Illuminate\Support\Facades\App;
 
 class UspsFlat extends AbstractShipping
 {
@@ -136,7 +140,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate->method_description = 'The total weight of the cart exceeds the allowed limit for shipping.';
             $cartShippingRate->price = 0;
             $cartShippingRate->base_price = 0;
-            $cartShippingRate->error_message = 'The total weight of your order exceeds the maximum limit. Please adjust your cart or contact support.';
+            //$cartShippingRate->error_message = 'The total weight of your order exceeds the maximum limit. Please adjust your cart or contact support.';
 
             return [/*$cartShippingRate*/];
         }
@@ -170,18 +174,6 @@ class UspsFlat extends AbstractShipping
     }
 
     /**
-     * Payment method services
-     *
-     * @var string
-     */
-    protected $services  = [
-        '4'      => 'Retail Ground', //este
-        '16'     => 'Priority Mail Flat Rate Envelope', //este
-        '28'     => 'Priority Mail Small Flat Rate Box', //este
-        '61'     => 'First-Class Package Service' //este
-    ];
-
-    /**
      * Checks if payment method is available
      *
      * @return array
@@ -191,7 +183,7 @@ class UspsFlat extends AbstractShipping
         return core()->getConfigData('sales.carriers.usps_flat.active');
     }
 
-    public function calculate()
+    public function calculateLegacy()
     {
         $cart = Cart::getCart();
 
@@ -367,5 +359,200 @@ class UspsFlat extends AbstractShipping
         }
 
         return $result;
+    }
+
+    public function calculate()
+    {
+        $cart = Cart::getCart();
+
+        if (!$cart || !$cart->items->count()) {
+            // Handle empty cart
+            $cartShippingRate = new CartShippingRate;
+
+            $cartShippingRate->carrier = $this->getCode();
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Rate Shipping';
+            $cartShippingRate->method = 'no_shipping';
+            $cartShippingRate->method_title = 'Empty Cart';
+            $cartShippingRate->method_description = 'There are no products in the cart.';
+            $cartShippingRate->price = 0;
+            $cartShippingRate->base_price = 0;
+            //$cartShippingRate->error_message = 'Your cart is empty. Please add products to continue.';
+
+            return [$cartShippingRate];
+        }
+
+        $totalWeight = $totalVolume = $maxLength = $maxWidth = $maxHeight = 0;
+
+        foreach ($cart->items as $item) {
+
+            //Hayar el producto para de ahi sacar el length/width/height
+            $product = Product::find($item->product_id);
+
+            $weight = $product->weight;
+            $totalWeight += $weight * $item->quantity;
+
+            $length = $product->length;
+            $width = $product->width;
+            $height = $product->height;
+            $totalVolume += ($length * $width * $height) * $item->quantity;
+
+            $maxLength = $length > $maxLength ? $length : $maxLength;
+            $maxWidth = $width > $maxWidth ? $width : $maxWidth;
+            $maxHeight = $height > $maxHeight ? $height : $maxHeight;
+        }
+
+        $maxCarDimensions = [
+            'length' => $maxLength,
+            'width' => $maxWidth,
+            'height' => $maxHeight
+        ];
+
+        $uspsPriceRates = new USPSPriceRates;
+
+
+
+        $dimensions =  $uspsPriceRates->calcularDimensionesCarritoDimensional($totalVolume);
+
+       
+
+        $isMachinable = $uspsPriceRates->isMachinable( $dimensions, $totalWeight );
+
+        if (!$isMachinable) {
+            // Handle no Machinable cart
+            $cartShippingRate = new CartShippingRate;
+            $cartShippingRate->carrier = $this->getCode();
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Rate Shipping';
+            $cartShippingRate->method = 'no_shipping';
+            $cartShippingRate->method_title = 'Cart is too Big';
+            $cartShippingRate->method_description = 'There are too many products in the cart.';
+            $cartShippingRate->price = 0;
+            $cartShippingRate->base_price = 0;
+            //$cartShippingRate->error_message = 'Your cart is too Big. Please quit products to continue.';
+
+            return [$cartShippingRate];
+        }
+
+        $ZipOrigination =  core()->getConfigData('sales.shipping.origin.zipcode');
+
+        $address = $cart->shipping_address;
+        $ZipDestination = $address['postcode'];
+
+        $mailingDate = new DateTime();
+        $mailingDate = $mailingDate->format("Y-m-d"); //$mailingDate = 2024-10-23
+
+        //dump($ZipOrigination, $ZipDestination , $totalWeight, $dimensions, $mailingDate); die;
+
+        $dimensionalRates = $uspsPriceRates->getDimensionalRectangularRates($ZipOrigination, $ZipDestination, $totalWeight, $dimensions, $mailingDate);
+
+        //dump($dimensionalRates); die;
+
+        // Calculate total shipping cost based on the required number of envelopes and boxes
+        $configPath = 'sales.carriers.usps_flat';
+        $envelopeBaseCost = core()->getConfigData("{$configPath}.priority_mail_flat_rate_envelope") ;
+
+        $services = [];
+        foreach ($dimensionalRates as $rateName => $rateArray) {
+            $services[] = [
+                'name'     => $rateArray['rates'][0]['description'],
+                'price'     => $rateArray['totalBasePrice'] ,
+                'delivery' => '1-3 business days',
+            ];
+        }
+
+        $flatType = $uspsPriceRates->getAplicableFlatBoxType($totalVolume, $maxCarDimensions);
+        if ($flatType) {
+            $flatRate = $uspsPriceRates->getPriorityMailFlatRates($ZipOrigination, $ZipDestination, $totalWeight, $dimensions, $mailingDate, $flatType);
+            if ($flatRate) {
+                $services[] = [
+                    'name'     => $flatRate['rates'][0]['description'],
+                    'price'     => $flatRate['totalBasePrice'],
+                ];
+            }
+        }
+
+        // Sort services by lowest price
+        usort($services, function ($a, $b) {
+            return $a['price'] <=> $b['price'];
+        });
+
+        // Prepare rates as CartShippingRate objects
+        foreach ($services as $service) {
+
+            $translation = $this->translate($service['name']);
+
+            $cartShippingRate = new CartShippingRate;
+            $cartShippingRate->carrier = $this->getCode();
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Shipping';
+            $cartShippingRate->method = Str::slug($translation['name'], '_');
+            $cartShippingRate->method_title = $translation['name'];
+            $cartShippingRate->method_description = $translation['delivery'];
+            $cartShippingRate->price = $service['price'];
+            $cartShippingRate->base_price = $service['price'];
+
+            $result[] = $cartShippingRate;
+        }
+
+        return $result;
+    }
+
+    public function translate($description)
+    {
+        $locale = App::getLocale();
+
+        $descriptionTranslated = "";
+        $delivery = "";
+
+        if ($description=="USPS Ground Advantage Machinable Dimensional Rectangular") {
+            if ($locale=="es") {
+                $descriptionTranslated = "Envío Económico USPS";
+                $delivery = "2-5 días hábiles | Opción asequible para entregas no urgentes. Incluye seguimiento y seguro básico.";
+            } else {
+                $descriptionTranslated = "USPS Economy Shipping";
+                $delivery = "2-5 business days | Affordable option for non-urgent deliveries. Includes tracking and basic insurance.";
+            }
+        }
+
+        if ($description=="Priority Mail Machinable Dimensional Rectangular") {
+            if ($locale=="es") {
+                $descriptionTranslated = "Envío Rápido USPS";
+                $delivery = "1-3 días hábiles | Opción de entrega rápida con servicio confiable. Seguimiento y seguro de hasta $100 incluidos.";
+            } else {
+                $descriptionTranslated = "USPS Fast Shipping";
+                $delivery = "1-3 business days | Quicker delivery option with reliable service. Tracking and basic insurance included.";
+            }
+        }
+
+        if ($description=="Priority Mail Express Machinable Dimensional Rectangular") {
+            if ($locale=="es") {
+                $descriptionTranslated = "Envío Express USPS";
+                $delivery = "1-2 días hábiles (Garantizado) | Es la opción de entrega más rápida, con garantía de devolución de dinero. Incluye seguimiento y seguro.";
+            } else {
+                $descriptionTranslated = "USPS Express Shipping";
+                $delivery = "1-2 business days (Guaranteed) | Fastest delivery option with a money-back guarantee. Includes tracking and insurance.";
+            }
+        }
+
+        if (strpos($description, "Flat Rate Box") !== false) {
+            if ($locale=="es") {
+                if (strpos($description, "Small")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Pequeña -USPS";
+                if (strpos($description, "Medium")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Mediana -USPS";
+                if (strpos($description, "Large")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Grande -USPS";
+                $delivery = "1-3 días hábiles | Opción de entrega rápida con servicio confiable. Seguimiento y seguro básico incluidos.";
+            } else {
+                if (strpos($description, "Small")) $descriptionTranslated = "Flat Rate Fast Mail - Small Box -USPS";
+                if (strpos($description, "Medium")) $descriptionTranslated = "Flat Rate Fast Mail - Medium Box -USPS";
+                if (strpos($description, "Large")) $descriptionTranslated = "Flat Rate Fast Mail - Large Box -USPS";
+                $delivery = "1-3 business days | Quicker delivery option with reliable service. Tracking and basic insurance included.";
+            }
+        }
+
+        if ($descriptionTranslated == "") {
+            $descriptionTranslated == $description;
+        }
+
+        return [
+            "name" => $descriptionTranslated,
+            "delivery" => $delivery
+        ];
     }
 }
