@@ -56,15 +56,15 @@ class UspsFlat extends AbstractShipping
             //Hayar el producto para de ahi sacar el length/width/height
             $product = Product::find($item->product_id);
 
-            $weight = $product->weight;
-            $totalWeight += $weight * $item->quantity;
+            $weight = (float)$product->weight;
+            $totalWeight += $weight * (int)$item->quantity;
 
-            $length = $product->length;
-            $width = $product->width;
-            $height = $product->height;
-            $totalVolume += ($length * $width * $height) * $item->quantity;
+            $length = (float)$product->length;
+            $width = (float)$product->width;
+            $height = (float)$product->height;
+            $totalVolume += ($length * $width * $height) * (int)$item->quantity;
 
-            $totalHeight += $height * $item->quantity;
+            $totalHeight += $height * (int)$item->quantity;
 
             $maxLength = $length > $maxLength ? $length : $maxLength;
             $maxWidth = $width > $maxWidth ? $width : $maxWidth;
