@@ -10,14 +10,12 @@ class USPSPriceRates
     private $client_id;
     private $client_secret;
     private $token;
-    private $cache_version = "v1.02";
+    private $cache_version = "v1.25";
 
     public function __construct()
     {
         $this->client_id = config('services.usps.client_id');
         $this->client_secret = config('services.usps.client_secret');
-
-        $this->token = $this->getToken();
     }
 
     private function getToken()
@@ -32,7 +30,7 @@ class USPSPriceRates
             $tokenData = $this->getOAuthToken();
             if (isset($tokenData['access_token'])) {
                 $token = $tokenData['access_token'];
-                Cache::put($cacheKey, $token, 600 ); // Almacena el token en caché
+                Cache::put($cacheKey, $token, 300 ); // Almacena el token en caché
             }
         }
 
@@ -41,9 +39,6 @@ class USPSPriceRates
 
     public function getOAuthToken()
     {
-        //$client_id = config('services.usps.client_id'); // Asigna desde .env
-        //$client_secret = config('services.usps.client_secret'); // Asigna desde .env
-
         $url = 'https://api.usps.com/oauth2/v3/token';
         $data = [
             "client_id" => $this->client_id,
@@ -69,6 +64,8 @@ class USPSPriceRates
 
     private function makeRequestWithRetry($url, $data, $maxRetries = 2)
     {
+        $this->token = $this->getToken();
+
         $attempt = 0;
         $response = null;
 
@@ -89,18 +86,17 @@ class USPSPriceRates
             }
 
             $attempt++;
-            //Log::warning("Reintentando solicitud a USPS API, intento: $attempt");
         }
 
         return $response;
     }
 
     //Dimensional rates de PRIORITY_MAIL, PRIORITY_MAIL_EXPRESS y USPS_GROUND_ADVANTAGE
-    public function getDimensionalRectangularRates($originZIPCode, $destinationZIPCode, $weight, $dimensions, $mailingDate, $clearCache = false)
+    public function getDimensionalRectangularRates($originZIPCode, $destinationZIPCode, $weight, $dimensions, $mailingDate, $mailClassesEnabled, $clearCache = false)
     {
-
         $url = 'https://api.usps.com/prices/v3/base-rates/search';
-        $mailClasses = [ "PRIORITY_MAIL", "PRIORITY_MAIL_EXPRESS", "USPS_GROUND_ADVANTAGE" /*"PARCEL_SELECT",*/];
+        //$mailClasses = [ "PRIORITY_MAIL", "PRIORITY_MAIL_EXPRESS", "USPS_GROUND_ADVANTAGE" /*"PARCEL_SELECT",*/];
+        $mailClasses = $mailClassesEnabled;
 
         $rates = [];
 
@@ -189,10 +185,7 @@ class USPSPriceRates
                 $cachedRate = Cache::get($cacheKey);
                 if ($cachedRate) return $cachedRate;
 
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->token,
-                ])->timeout(30)->post($url, $data);
+                $response = $this->makeRequestWithRetry($url, $data);
 
                 if ($response->successful()) {
                     $flatRate = $response->json();
@@ -298,7 +291,6 @@ class USPSPriceRates
 
         $volumenConHolgura = $volumenTotalCarrito * $slack_factor;
 
-        //dump($volumenConHolgura); die;
         $smallBoxVolume = $smallBox["length"] * $smallBox["width"] * $smallBox["height"];
         //Verificar si cabe volumetricamente
         if ( $volumenConHolgura <= $smallBoxVolume ) {
@@ -350,29 +342,29 @@ class USPSPriceRates
     {
         // Dimensiones para Small Box
         $smallBox = [
-            'length' => 8.6875,
-            'width' => 5.4375,
-            'height' => 1.75
+            'length' => 8.5,
+            'width' => 5.3,
+            'height' => 1.7
         ];
 
         // Dimensiones para Medium Box (2 versiones)
         $mediumBox1 = [
-            'length' => 11.25,
-            'width' => 8.75,
-            'height' => 6.0
+            'length' => 11.1,
+            'width' => 8.6,
+            'height' => 5.9
         ];
 
         $mediumBox2 = [
-            'length' => 14.0,
-            'width' => 12.0,
-            'height' => 3.5
+            'length' => 13.9,
+            'width' => 13.9,
+            'height' => 3.4
         ];
 
         // Dimensiones para Large Box
         $largeBox = [
-            'length' => 12.25,
-            'width' => 12.25,
-            'height' => 6.0
+            'length' => 12.1,
+            'width' => 12.1,
+            'height' => 5.9
         ];
 
         //Verificar si cabe volumetricamente
@@ -381,7 +373,7 @@ class USPSPriceRates
             if ($maxCartDimensions['length'] <= $smallBox['length'] &&
                 $maxCartDimensions['width'] <= $smallBox['width'] &&
                 $maxCartDimensions['height'] <= $smallBox['height']) {
-                return 'Small';
+                return [ 'size' => 'Small', 'dimensions' => $smallBox];
             }
         }
 
@@ -391,7 +383,7 @@ class USPSPriceRates
             if ($maxCartDimensions['length'] <= $mediumBox1['length'] &&
                 $maxCartDimensions['width'] <= $mediumBox1['width'] &&
                 $maxCartDimensions['height'] <= $mediumBox1['height']) {
-                return 'Medium';
+                return [ 'size' => 'Medium', 'dimensions' => $mediumBox1];
             }
         }
 
@@ -401,7 +393,7 @@ class USPSPriceRates
             if ($maxCartDimensions['length'] <= $mediumBox2['length'] &&
                 $maxCartDimensions['width'] <= $mediumBox2['width'] &&
                 $maxCartDimensions['height'] <= $mediumBox2['height']) {
-                return 'Medium';
+                return [ 'size' => 'Medium', 'dimensions' => $mediumBox2];
             }
         }
 
@@ -411,7 +403,7 @@ class USPSPriceRates
             if ($maxCartDimensions['length'] <= $largeBox['length'] &&
                 $maxCartDimensions['width'] <= $largeBox['width'] &&
                 $maxCartDimensions['height'] <= $largeBox['height']) {
-                return 'Large';
+                return [ 'size' => 'Large', 'dimensions' => $largeBox];
             }
         }
 
@@ -431,15 +423,6 @@ class USPSPriceRates
         } else {
             $factorHolgura = 1.15; // 10% de holgura
         }
-
-        // Relación de dimensiones de la caja: 2 (longitud) x 1 (ancho) x 1 (altura)
-
-        /*$volumenConHolgura = $volumenTotalCarrito * $factorHolgura;
-
-        // Calcular las dimensiones proporcionales
-        $altura = pow($volumenConHolgura / 2, 1/3);
-        $longitud = 2 * $altura;
-        $ancho = $altura;*/
 
         $dimensionsModel = [
             'length' => 8,
@@ -494,11 +477,6 @@ class USPSPriceRates
         $new_width = $type_width * $scale_factor;
         $new_length = $type_length * $scale_factor;
         $new_height = $type_height * $scale_factor;
-
-        // 4. Apply the slack factor
-        /*$new_width *= $slack_factor;
-        $new_length *= $slack_factor;
-        $new_height *= $slack_factor;*/
 
         // 5. Return the new proportional dimensions
         return array(

@@ -3,8 +3,8 @@
 return [
     [
         'key'    => 'sales.carriers.usps_flat',
-        'info'   => 'Usps Flat Rate by Weight',
-        'name'   => 'Usps Flat Rate by Weight',
+        'info'   => 'Usps Shipping Rates',
+        'name'   => 'Usps Shipping Rates',
         'sort'   => 20,
         'fields' => [
             [
@@ -12,7 +12,7 @@ return [
                 'title'         => 'Title',
                 'type'          => 'text',
                 'validation'    => 'required',
-                'default'       => 'USPS Flat Rate Shipping',
+                'default'       => 'USPS Shipping Rates',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -21,7 +21,7 @@ return [
                 'title'         => 'Description',
                 'type'          => 'textarea',
                 'validation'    => '',
-                'default'       => 'USPS Flat Rate Shipping based on total cart weight.',
+                'default'       => 'Shipping Rates based on USPS API. Services based in cart weight/dimensions/distance or flat rates. Calculated on real-time',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -58,22 +58,20 @@ return [
                     [
                         'title' => 'Inactive',
                         'value' => 'INACTIVE',
-                    ],
-                    [
-                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_FLAT',
                     ], [
                         'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL',
                     ], [
                         'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
-                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL_EXPRESS',
                     ], [
                         'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
                         'value' => 'USPS_GROUND_ADVANTAGE',
+                    ], [
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
                     ]
                 ],
-                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -85,21 +83,20 @@ return [
                     [
                         'title' => 'Inactive',
                         'value' => 'INACTIVE',
-                    ],[
-                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_FLAT',
                     ], [
                         'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL',
                     ], [
                         'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
-                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL_EXPRESS',
                     ], [
                         'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
                         'value' => 'USPS_GROUND_ADVANTAGE',
+                    ], [
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
                     ]
                 ],
-                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -111,21 +108,20 @@ return [
                     [
                         'title' => 'Inactive',
                         'value' => 'INACTIVE',
-                    ],[
-                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_FLAT',
                     ], [
                         'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL',
                     ], [
                         'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
-                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL_EXPRESS',
                     ], [
                         'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
                         'value' => 'USPS_GROUND_ADVANTAGE',
+                    ], [
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
                     ]
                 ],
-                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -137,21 +133,20 @@ return [
                     [
                         'title' => 'Inactive',
                         'value' => 'INACTIVE',
-                    ],[
-                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_FLAT',
                     ], [
                         'title' => 'Priority Mail - Dimensional (1 a 3 días hábiles)',
-                        'value' => 'PRIORITY_MAIL_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL',
                     ], [
                         'title' => 'Priority Mail Express - Dimensional (1 a 2 días)',
-                        'value' => 'PRIORITY_MAIL_EXPRESS_DIMENSIONAL',
+                        'value' => 'PRIORITY_MAIL_EXPRESS',
                     ], [
                         'title' => 'Ground Advantage - Estandard (2 a 5 días hábiles)',
                         'value' => 'USPS_GROUND_ADVANTAGE',
+                    ], [
+                        'title' => 'Priority Mail - Flat Rates (1 a 3 días hábiles)',
+                        'value' => 'PRIORITY_MAIL_FLAT',
                     ]
                 ],
-                //'validation'    => 'required_if:active,1',
                 'channel_based' => false,
                 'locale_based'  => false,
             ]
