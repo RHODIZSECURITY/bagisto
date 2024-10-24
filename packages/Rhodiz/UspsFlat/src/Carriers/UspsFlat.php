@@ -381,7 +381,7 @@ class UspsFlat extends AbstractShipping
             return [$cartShippingRate];
         }
 
-        $totalWeight = $totalVolume = $maxLength = $maxWidth = $maxHeight = 0;
+        $totalWeight = $totalHeight = $totalVolume = $maxLength = $maxWidth = $maxHeight = 0;
 
         foreach ($cart->items as $item) {
 
@@ -396,6 +396,8 @@ class UspsFlat extends AbstractShipping
             $height = $product->height;
             $totalVolume += ($length * $width * $height) * $item->quantity;
 
+            $totalHeight += $height * $item->quantity;
+
             $maxLength = $length > $maxLength ? $length : $maxLength;
             $maxWidth = $width > $maxWidth ? $width : $maxWidth;
             $maxHeight = $height > $maxHeight ? $height : $maxHeight;
@@ -409,11 +411,7 @@ class UspsFlat extends AbstractShipping
 
         $uspsPriceRates = new USPSPriceRates;
 
-
-
         $dimensions =  $uspsPriceRates->calcularDimensionesCarritoDimensional($totalVolume);
-
-       
 
         $isMachinable = $uspsPriceRates->isMachinable( $dimensions, $totalWeight );
 
@@ -459,7 +457,7 @@ class UspsFlat extends AbstractShipping
             ];
         }
 
-        $flatType = $uspsPriceRates->getAplicableFlatBoxType($totalVolume, $maxCarDimensions);
+        $flatType = $uspsPriceRates->getAplicableFlatBoxTypeByTotalHeigth(/*$totalVolume,*/ $maxCarDimensions, $totalHeight);
         if ($flatType) {
             $flatRate = $uspsPriceRates->getPriorityMailFlatRates($ZipOrigination, $ZipDestination, $totalWeight, $dimensions, $mailingDate, $flatType);
             if ($flatRate) {

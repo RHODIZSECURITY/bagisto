@@ -257,7 +257,7 @@ class USPSPriceRates
 
     //Primero prueba si se acomoda en el Small Box, despues en el Medium Box y despues en el Large Box
     //Si no se acomoda devolver false.
-    public function getAplicableFlatBoxType($volumenTotalCarrito, $maxCartDimensions)
+    public function getAplicableFlatBoxTypeByVolume($volumenTotalCarrito, $maxCartDimensions)
     {
         if ($volumenTotalCarrito<100) {
             $slack_factor = 1.30; // 30% de holgura
@@ -346,6 +346,77 @@ class USPSPriceRates
         return false;
     }
 
+    public function getAplicableFlatBoxTypeByTotalHeigth( $maxCartDimensions, $totalHeight )
+    {
+        // Dimensiones para Small Box
+        $smallBox = [
+            'length' => 8.6875,
+            'width' => 5.4375,
+            'height' => 1.75
+        ];
+
+        // Dimensiones para Medium Box (2 versiones)
+        $mediumBox1 = [
+            'length' => 11.25,
+            'width' => 8.75,
+            'height' => 6.0
+        ];
+
+        $mediumBox2 = [
+            'length' => 14.0,
+            'width' => 12.0,
+            'height' => 3.5
+        ];
+
+        // Dimensiones para Large Box
+        $largeBox = [
+            'length' => 12.25,
+            'width' => 12.25,
+            'height' => 6.0
+        ];
+
+        //Verificar si cabe volumetricamente
+        if ( $smallBox["height"] >= $totalHeight ) {
+            // Validar si el paquete puede ser enviado en la Small Box
+            if ($maxCartDimensions['length'] <= $smallBox['length'] &&
+                $maxCartDimensions['width'] <= $smallBox['width'] &&
+                $maxCartDimensions['height'] <= $smallBox['height']) {
+                return 'Small';
+            }
+        }
+
+        //Verificar si cabe volumetricamente
+        if ( $mediumBox1["height"] >= $totalHeight ) {
+            // Validar si el paquete puede ser enviado en la Small Box
+            if ($maxCartDimensions['length'] <= $mediumBox1['length'] &&
+                $maxCartDimensions['width'] <= $mediumBox1['width'] &&
+                $maxCartDimensions['height'] <= $mediumBox1['height']) {
+                return 'Medium';
+            }
+        }
+
+        //Verificar si cabe volumetricamente
+        if ( $mediumBox2["height"] >= $totalHeight ) {
+            // Validar si el paquete puede ser enviado en la Medium Box
+            if ($maxCartDimensions['length'] <= $mediumBox2['length'] &&
+                $maxCartDimensions['width'] <= $mediumBox2['width'] &&
+                $maxCartDimensions['height'] <= $mediumBox2['height']) {
+                return 'Medium';
+            }
+        }
+
+        //Verificar si cabe volumetricamente
+        if ( $largeBox["height"] >= $totalHeight ) {
+            // Validar si el paquete puede ser enviado en la Large Box
+            if ($maxCartDimensions['length'] <= $largeBox['length'] &&
+                $maxCartDimensions['width'] <= $largeBox['width'] &&
+                $maxCartDimensions['height'] <= $largeBox['height']) {
+                return 'Large';
+            }
+        }
+
+        return false;
+    }
 
     //Se intenta crear una caja de (length x width x height) de (2 x 1 x 1)
     //Se le obliga a ser Machinable
