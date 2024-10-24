@@ -30,9 +30,6 @@
 
                 <!-- VatId Name -->
                 <x-admin::form.control-group>
-                    <x-admin::form.control-group.label>
-                        @lang('admin::app.sales.orders.create.cart.address.vat-id')
-                    </x-admin::form.control-group.label>
 
                     <x-admin::form.control-group.control
                         type="hidden"

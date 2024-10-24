@@ -72,9 +72,6 @@
 
                             <!-- Vat Id -->
                             <x-admin::form.control-group class="w-full">
-                                <x-admin::form.control-group.label>
-                                    @lang('admin::app.customers.customers.view.address.create.vat-id')
-                                </x-admin::form.control-group.label>
 
                                 <x-admin::form.control-group.control
                                     type="hidden"
