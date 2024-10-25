@@ -57,7 +57,7 @@ class UspsFlat extends AbstractShipping
             $product = Product::find($item->product_id);
 
             $weight = (float)$product->weight;
-            $totalWeight += $weight * (int)$item->quantity;
+            $totalWeight += (float) $weight * (int)$item->quantity;
 
             $length = (float)$product->length;
             $width = (float)$product->width;
