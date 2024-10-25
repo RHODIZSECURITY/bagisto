@@ -118,8 +118,6 @@ class USPSPriceRates
                 "mailingDate" => $mailingDate,
             ];
 
-            dump($data);
-
             //Buscar primero en cache
             $cacheKey = "usps_dimensional_rate_{$mailClass}_{$destinationZIPCode}_{$weight}_{$dimensions['length']}_{$dimensions['width']}_{$dimensions['height']}_{$mailingDate}_".$this->cache_version;
             if ($clearCache) Cache::forget($cacheKey);
@@ -130,8 +128,6 @@ class USPSPriceRates
             }
 
             $response = $this->makeRequestWithRetry($url, $data);
-
-            dump($response->json()); die;
 
             if ($response->successful()) {
                 $rates[$mailClass] = $dimensionalRate = $response->json();

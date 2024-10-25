@@ -3,8 +3,8 @@
 return [
     [
         'key'    => 'sales.carriers.usps_flat',
-        'info'   => 'Usps Shipping Rates',
-        'name'   => 'Usps Shipping Rates',
+        'info'   => 'Get real-time USPS price rates through your API, based on the weight/dimensions/of the cart and customer address.',
+        'name'   => 'Usps Shipping',
         'sort'   => 20,
         'fields' => [
             [
@@ -12,7 +12,7 @@ return [
                 'title'         => 'Title',
                 'type'          => 'text',
                 'validation'    => 'required',
-                'default'       => 'USPS Shipping Rates',
+                'default'       => 'USPS Shipping',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],
@@ -21,7 +21,7 @@ return [
                 'title'         => 'Description',
                 'type'          => 'textarea',
                 'validation'    => '',
-                'default'       => 'Shipping Rates based on USPS API. Services based in cart weight/dimensions/distance or flat rates. Calculated on real-time',
+                'default'       => 'Shipping Rates based on USPS API. Retrieve Services based in cart weight/dimensions/distance or flat rates. All rates are calculated on real-time',
                 'channel_based' => false,
                 'locale_based'  => false,
             ],

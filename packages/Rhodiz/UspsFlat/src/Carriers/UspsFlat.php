@@ -56,14 +56,15 @@ class UspsFlat extends AbstractShipping
             //Hayar el producto para de ahi sacar el length/width/height
             $product = Product::find($item->product_id);
 
-            $weight = (float)$product->weight;
-            $totalWeight += $weight * (int)$item->quantity;
+            $weightProduct = (float)$product->weight;
+            $weightCartItem = (float)$item->weight;
+            $weightFinal = $weightProduct != 0 ? $weightProduct : $weightCartItem;
 
-            dump($item->weight,(int)$item->quantity, $weight);
+            $totalWeight += $weightFinal * (int)$item->quantity;
 
-            $length = (float)$product->length;
-            $width = (float)$product->width;
-            $height = (float)$product->height;
+            $length = (float)$product->length; $length = $length > 0 ? $length : 8;
+            $width = (float)$product->width; $length = $width > 0 ? $width : 6;
+            $height = (float)$product->height; $height = $height > 0 ? $height : 1.5;
             $totalVolume += ($length * $width * $height) * (int)$item->quantity;
 
             $totalHeight += $height * (int)$item->quantity;
@@ -82,8 +83,6 @@ class UspsFlat extends AbstractShipping
         $uspsPriceRates = new USPSPriceRates;
 
         $dimensions =  $uspsPriceRates->calcularDimensionesCarritoDimensional($totalVolume);
-
-        dump($totalWeight);
 
         $isMachinable = $uspsPriceRates->isMachinable( $dimensions, $totalWeight );
 
@@ -131,6 +130,16 @@ class UspsFlat extends AbstractShipping
 
         $services = [];
         foreach ($dimensionalRates as $rateName => $rateArray) {
+
+            //Comprobar error
+            if (isset($rateArray['error'])) {
+                $services[] = [
+                    'name'  => "Error code: ". (string) $rateArray['error'] . " Message: ". $this->truncarString((string) $rateArray['message'], 1000, true),
+                    'price' => 1000
+                ];
+                continue;
+            }
+
             $services[] = [
                 'name'  => $rateArray['rates'][0]['description'],
                 'price' => $rateArray['totalBasePrice']
@@ -565,5 +574,17 @@ class UspsFlat extends AbstractShipping
         }
 
         return $result;
+    }
+
+    function truncarString($string, $length, $addEllipsis = false) {
+        // Verificar si el string es mayor que el tamaño deseado
+        if (strlen($string) > $length) {
+            // Truncar el string al tamaño deseado
+            $truncated = substr($string, 0, $length);
+            // Añadir puntos suspensivos si es necesario
+            return $addEllipsis ? $truncated . '...' : $truncated;
+        }
+        // Devolver el string sin modificar si es menor o igual al tamaño deseado
+        return $string;
     }
 }
