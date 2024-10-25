@@ -46,8 +46,6 @@ class StripeController extends Controller
 
   public function redirect()
   {
-
-
     $cart = Cart::getCart();
     $billingAddress = $cart->billing_address;
     Stripe::setApiKey(core()->getConfigData('sales.payment_methods.stripe.stripe_api_key'));
@@ -84,16 +82,19 @@ class StripeController extends Controller
   public function success()
   {
     $cart = Cart::getCart();
-    $data = (new OrderResource($cart))->jsonSerialize(); // new class v2.2
+
+    $data = (new OrderResource($cart))->jsonSerialize();
+
     $order = $this->orderRepository->create($data);
-    // $order = $this->orderRepository->create(Cart::prepareDataForOrder()); // removed for v2.2
-    $this->orderRepository->update(['status' => 'processing'], $order->id);
+
     if ($order->canInvoice()) {
-      $this->invoiceRepository->create($this->prepareInvoiceData($order));
+        $this->invoiceRepository->create($this->prepareInvoiceData($order));
     }
+
     Cart::deActivateCart();
-    session()->flash('order_id', $order->id); // line instead of $order in v2.1
-    // Order and prepare invoice
+
+    session()->flash('order_id', $order->id);
+
     return redirect()->route('shop.checkout.onepage.success');
   }
 
@@ -114,10 +115,13 @@ class StripeController extends Controller
    */
   protected function prepareInvoiceData($order)
   {
-    $invoiceData = ["order_id" => $order->id,];
+    $invoiceData = [
+        'order_id' => $order->id,
+        'invoice'  => ['items' => []],
+    ];
 
     foreach ($order->items as $item) {
-      $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
+        $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
     }
 
     return $invoiceData;
