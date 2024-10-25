@@ -51,7 +51,7 @@ class StripeController extends Controller
         Stripe::setApiKey(core()->getConfigData('sales.payment_methods.stripe.stripe_api_key'));
 
         // Calcular el monto total en centavos
-        $total_amount = bcmul($cart->grand_total, 100);
+        $total_amount = (int) round($cart->grand_total * 100);
 
         // Generar la descripción del producto basado en los ítems del carrito
         $product_name = trans('stripe::app.order_description', [
