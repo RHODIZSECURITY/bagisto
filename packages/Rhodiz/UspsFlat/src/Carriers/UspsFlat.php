@@ -81,6 +81,8 @@ class UspsFlat extends AbstractShipping
 
         $dimensions =  $uspsPriceRates->calcularDimensionesCarritoDimensional($totalVolume);
 
+        dump($totalWeight);
+
         $isMachinable = $uspsPriceRates->isMachinable( $dimensions, $totalWeight );
 
         if (!$isMachinable) {
