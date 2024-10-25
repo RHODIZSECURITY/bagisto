@@ -1,9 +1,9 @@
 <?php
 
-
 namespace Rhodiz\Stripe\Http\Controllers;
 
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Webkul\Checkout\Facades\Cart;
 use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Sales\Transformers\OrderResource;
@@ -12,118 +12,159 @@ use Stripe\Stripe;
 
 class StripeController extends Controller
 {
+    /**
+     * @var OrderRepository
+     */
+    protected $orderRepository;
 
-  /**
-   * OrderRepository $orderRepository
-   *
-   * @var \Webkul\Sales\Repositories\OrderRepository
-   */
-  protected $orderRepository;
-  /**
-   * InvoiceRepository $invoiceRepository
-   *
-   * @var \Webkul\Sales\Repositories\InvoiceRepository
-   */
-  protected $invoiceRepository;
+    /**
+     * @var InvoiceRepository
+     */
+    protected $invoiceRepository;
 
-  /**
-   * Create a new controller instance.
-   *
-   * @param  \Webkul\Attribute\Repositories\OrderRepository  $orderRepository
-   * @return void
-   */
-  public function __construct(OrderRepository $orderRepository,  InvoiceRepository $invoiceRepository)
-  {
-    $this->orderRepository = $orderRepository;
-    $this->invoiceRepository = $invoiceRepository;
-  }
-
-  /**
-   * Redirects to the paytm server.
-   *
-   * @return \Illuminate\View\View
-   */
-
-  public function redirect()
-  {
-    $cart = Cart::getCart();
-    $billingAddress = $cart->billing_address;
-    Stripe::setApiKey(core()->getConfigData('sales.payment_methods.stripe.stripe_api_key'));
-
-    $shipping_rate = $cart->selected_shipping_rate ? $cart->selected_shipping_rate->price : 0; // shipping rate
-    $discount_amount = $cart->discount_amount; // discount amount
-    $total_amount =  ($cart->sub_total + $cart->tax_total + $shipping_rate) - $discount_amount; // total amount
-
-    $checkout_session = \Stripe\Checkout\Session::create([
-      'line_items' => [[
-        'price_data' => [
-          'currency' => $cart->global_currency_code,
-          'product_data' => [
-            'name' => 'Vaqueras ala Moda Checkout Payment',
-          ],
-          'unit_amount' => $total_amount * 100,
-        ],
-        'quantity' => 1,
-      ]],
-      'payment_method_types' => [
-        'card',
-      ],
-      'mode' => 'payment',
-      'success_url' => route('stripe.success'),
-      'cancel_url' => route('stripe.cancel'),
-    ]);
-
-    return redirect()->away($checkout_session->url);
-  }
-
-  /**
-   * success
-   */
-  public function success()
-  {
-    $cart = Cart::getCart();
-
-    $data = (new OrderResource($cart))->jsonSerialize();
-
-    $order = $this->orderRepository->create($data);
-
-    if ($order->canInvoice()) {
-        $this->invoiceRepository->create($this->prepareInvoiceData($order));
+    /**
+     * Constructor.
+     *
+     * @param OrderRepository $orderRepository
+     * @param InvoiceRepository $invoiceRepository
+     */
+    public function __construct(OrderRepository $orderRepository, InvoiceRepository $invoiceRepository)
+    {
+        $this->orderRepository = $orderRepository;
+        $this->invoiceRepository = $invoiceRepository;
     }
 
-    Cart::deActivateCart();
+    /**
+     * Redirige al usuario a la página de pago de Stripe.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function redirect(Request $request)
+    {
+        $cart = Cart::getCart();
 
-    session()->flash('order_id', $order->id);
+        if (!$cart) {
+            return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.cart_empty'));
+        }
 
-    return redirect()->route('shop.checkout.onepage.success');
-  }
+        Stripe::setApiKey(core()->getConfigData('sales.payment_methods.stripe.stripe_api_key'));
 
+        // Calcular el monto total en centavos
+        $total_amount = bcmul($cart->grand_total, 100);
 
-  /**
-   * failure
-   */
-  public function failure()
-  {
-    session()->flash('error', 'Stripe payment either cancelled or transaction failure.');
-    return redirect()->route('shop.checkout.cart.index');
-  }
+        // Generar la descripción del producto basado en los ítems del carrito
+        $product_name = trans('stripe::app.order_description', [
+            'app_name' => config('app.name'),
+            'order_id' => $cart->id,
+        ]);
 
-  /**
-   * Prepares order's invoice data for creation.
-   *
-   * @return array
-   */
-  protected function prepareInvoiceData($order)
-  {
-    $invoiceData = [
-        'order_id' => $order->id,
-        'invoice'  => ['items' => []],
-    ];
+        // Crear la sesión de pago en Stripe
+        try {
 
-    foreach ($order->items as $item) {
-        $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
+            $checkout_session = \Stripe\Checkout\Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => $cart->global_currency_code,
+                        'product_data' => [
+                            'name' => $product_name,
+                        ],
+                        'unit_amount' => (int)$total_amount,
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => route('stripe.success') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('stripe.cancel'),
+            ]);
+
+            return redirect()->away($checkout_session->url);
+
+        } catch (\Exception $e) {
+            Log::error('Error al crear la sesión de pago de Stripe: ' . $e->getMessage());
+            return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.error_payment_initiation'));
+        }
     }
 
-    return $invoiceData;
-  }
+    /**
+     * Maneja la respuesta exitosa del pago.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function success(Request $request)
+    {
+        $request->validate([
+            'session_id' => 'required|string',
+        ]);
+
+        Stripe::setApiKey(core()->getConfigData('sales.payment_methods.stripe.stripe_api_key'));
+
+        try {
+
+            $session = \Stripe\Checkout\Session::retrieve($request->session_id);
+
+            if ($session->payment_status === 'paid') {
+                // Verificar que el carrito corresponde al pago
+                $cart = Cart::getCart();
+
+                if (!$cart) {
+                    return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.cart_not_found'));
+                }
+
+                // Crear el pedido
+                $data = (new OrderResource($cart))->jsonSerialize();
+                $order = $this->orderRepository->create($data);
+
+                if ($order->canInvoice()) {
+                    $this->invoiceRepository->create($this->prepareInvoiceData($order));
+                }
+
+                Cart::deActivateCart();
+
+                //Es para ser usada en la siguiente peticion (redireccion) si se necesitara.
+                //pero ahora no tiene ninguna utilidad.
+                session()->flash('order_id', $order->id);
+
+                return redirect()->route('shop.checkout.onepage.success');
+            } else {
+                return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.payment_not_completed'));
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error al verificar el pago de Stripe: ' . $e->getMessage());
+            return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.error_payment_verification'));
+        }
+    }
+
+    /**
+     * Maneja la cancelación del pago.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function cancel()
+    {
+        return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.payment_cancelled'));
+    }
+
+    /**
+     * Prepara los datos de la factura del pedido.
+     *
+     * @param $order
+     * @return array
+     */
+    protected function prepareInvoiceData($order)
+    {
+        $invoiceData = [
+            'order_id' => $order->id,
+            'invoice' => ['items' => []],
+        ];
+
+        foreach ($order->items as $item) {
+            $invoiceData['invoice']['items'][$item->id] = $item->qty_to_invoice;
+        }
+
+        return $invoiceData;
+    }
 }

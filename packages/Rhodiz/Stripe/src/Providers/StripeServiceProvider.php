@@ -16,6 +16,8 @@ class StripeServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../Http/routes.php');
         //$this->loadViewsFrom(__DIR__. '/../Resources/views', 'stripe');
 
+        $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'stripe');
+
         //checkout cart page
         //$this->publishes([
          //   __DIR__ . '/../Resources/assets/images/stripe.svg' => resource_path('themes/default/assets/images/stripe.svg')
