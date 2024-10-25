@@ -117,9 +117,10 @@ class StripeController extends Controller
                 $data = (new OrderResource($cart))->jsonSerialize();
                 $order = $this->orderRepository->create($data);
 
-                if ($order->canInvoice()) {
+                //Solo se debe crear la orden y NO hacer factura aun
+                /*if ($order->canInvoice()) {
                     $this->invoiceRepository->create($this->prepareInvoiceData($order));
-                }
+                }*/
 
                 Cart::deActivateCart();
 
@@ -128,6 +129,7 @@ class StripeController extends Controller
                 session()->flash('order_id', $order->id);
 
                 return redirect()->route('shop.checkout.onepage.success');
+
             } else {
                 return redirect()->route('shop.checkout.cart.index')->with('error', trans('stripe::app.payment_not_completed'));
             }
