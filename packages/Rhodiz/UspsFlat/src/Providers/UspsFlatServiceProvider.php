@@ -14,6 +14,8 @@ class UspsFlatServiceProvider extends ServiceProvider
      */
     public function boot(Router $router)
     {
+        $this->loadRoutesFrom(__DIR__.'/../Http/routes.php');
+
         $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'usps_flat');
     }
 

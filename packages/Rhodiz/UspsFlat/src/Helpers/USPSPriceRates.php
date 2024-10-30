@@ -20,7 +20,7 @@ class USPSPriceRates
 
     private function getToken()
     {
-        $cacheKey = 'usps_token_'.$this->cache_version;
+        $cacheKey = 'usps_OAuth_token';//El token es compartido con Address //'usps_token_'.$this->cache_version;
 
         // Intenta obtener el token del caché
         $token = Cache::get($cacheKey);

@@ -262,7 +262,7 @@
                     v-slot="{ meta, errors, handleSubmit }"
                     as="div"
                 >
-                    <form @submit="handleSubmit($event, updateOrCreateAddress)">
+                    <form @submit="handleSubmit($event, validateThenUpdateOrCreateAddress)">
                         <!-- Billing Address Header -->
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal">
@@ -425,7 +425,7 @@
                 updateOrCreateAddress(params, { setErrors }) {
                     this.$emit('processing', 'address');
 
-                    params = params[this.activeAddressForm];
+                    //params = params[this.activeAddressForm];
 
                     let address = this.customerSavedAddresses[this.activeAddressForm].find(address => {
                         return address.id == params.id;
@@ -464,6 +464,8 @@
                     } else {
                         this.updateAddressInList(params);
                     }
+
+                    this.isStoring = false;
                 },
 
                 addAddressToList(address) {
@@ -523,6 +525,88 @@
 
                             return Promise.reject(error);
                         });
+                },
+
+                validateThenUpdateOrCreateAddress(params, { setErrors }) {
+
+                    this.isStoring = true;
+
+                    let myEmiter = this.$emitter;
+
+                    //console.log(params);
+
+                    params = params[this.activeAddressForm];
+
+                    //Pedir la validacion primero
+                    this.$axios.post('{{ route('rhodiz.usps.addresses.validate') }}', params)
+                    .then(response => {
+
+                        let address = response.data.data.address;
+                        let city = response.data.data.city;
+                        let postcode = response.data.data.postcode;
+                        let state = response.data.data.state;
+
+                        //Si los parametros son identicos no muestro nada al cliente
+                        if (params['address']==address && params['city']==city &&
+                            params['postcode']==postcode && params['state']==state) {
+
+                            this.updateOrCreateAddress(params, { setErrors });
+                            return;
+                        }
+
+                        //Se recibe una correccion
+                        const direccionSugerida = `${address}, ${state}, ${city}, ${postcode}`;
+                        const messageDeSugerencia = `Direccion sugerida: ${direccionSugerida}. Seleccione USAR SUGERENCIA si la sugerencia es correcta. Seleccione GUARDAR ASI para guardar la direccion que usted ingreso`;
+
+                        myEmiter.emit('open-confirm-modal', {
+                            title: 'Aseguremonos de que su direccion sea correcta',
+                            message: messageDeSugerencia,
+                            options: {
+                                btnDisagree: "Guardar asi",
+                                btnAgree: "Usar Sugerencia"
+                            },
+                            agree: () => {
+                               
+                                //Corregir la direccion
+                                params.address[0] = address;
+                                params.city = city;
+                                params.postcode = postcode;
+                                params.state = state;
+
+                                this.updateOrCreateAddress(params, { setErrors });
+                            },
+                            disagree: () => {
+
+                                this.updateOrCreateAddress(params, { setErrors });
+                            }
+                        });
+
+                    })
+                    .catch(error => {
+
+                        console.log("direccion no valida");
+
+                        //No es valida la direccion
+                        myEmiter.emit('open-confirm-modal', {
+                            title: 'No podemos confirmar su direccion',
+                            message: 'Compruebe que su direccion sea correcta y seleccione EDITAR si necesita modificar su direccion. Si la direccion que usted entro es correcta entonces seleccione GUARDAR ASI',
+                            options: {
+                                btnDisagree: "Guardar asi",
+                                btnAgree: "Editar"
+                            },
+                            agree: () => {
+                                console.log("AGREEE");
+                                //Seguir editando
+                                this.isStoring = false;
+                            },
+                            disagree: () => {
+                                console.log("DISAGREEE");
+                                this.updateOrCreateAddress(params, { setErrors });
+                            }
+                        });
+
+                        //return Promise.reject(error);
+                    });
                 },
 
                 updateCustomerAddress(id, params, { setErrors }) {
