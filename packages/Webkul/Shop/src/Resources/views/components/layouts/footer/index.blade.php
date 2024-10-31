@@ -82,18 +82,14 @@
         <!-- News Letter subscription -->
         @if (core()->getConfigData('customer.settings.newsletter.subscription'))
             <div class="grid gap-2.5">
+                <img src="{{ bagisto_asset('images/payments-logos.webp') }}" alt="Payments logo of Visa, Mastercard, Discover, American Express" width="331" height="50">
                 <p
-                    class="max-w-[288px] text-3xl italic leading-[45px] text-navyBlue max-md:text-2xl max-sm:text-lg"
+                    class="max-w-[288px] text-2xl italic leading-[45px] text-navyBlue max-md:text-2xl max-sm:text-lg"
                     role="heading"
                     aria-level="2"
                 >
                     @lang('shop::app.components.layouts.footer.newsletter-text')
                 </p>
-
-                <p class="text-xs">
-                    @lang('shop::app.components.layouts.footer.subscribe-stay-touch')
-                </p>
-
                 <div>
                     <x-shop::form
                         :action="route('shop.subscription.store')"
