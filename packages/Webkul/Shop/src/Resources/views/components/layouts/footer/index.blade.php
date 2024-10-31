@@ -79,10 +79,20 @@
 
         {!! view_render_event('bagisto.shop.layout.footer.newsletter_subscription.before') !!}
 
-        <!-- News Letter subscription -->
+        <div class="flex flex-wrap items-start gap-24 max-1180:gap-4">
+            <dl class="">
+                <img style="margin-bottom:10px" src="{{ bagisto_asset('images/payments-logos.webp') }}" alt="Payments logo of Visa, Mastercard, Discover, American Express" width="331" height="50">
+                <dt style="margin-bottom:10px" class="active">Contact:</dt>
+                <dd style="margin-bottom:10px">Phone: <a class="txtlink" href="tel:1-888-455-9995"> 1-281-763-9506</a></dd>
+                <dd style="margin-bottom:10px">Email: <a style="margin-bottom:10px" class="txtlink" href="mailto:support@vaquerasalamoda.com">support@vaquerasalamoda.com</a></dd>
+                <dd style="margin-bottom:10px"><a class="txtlink" href="#" target="_blank" rel="noopener"></a>834 Litle York RD, Houston, TX, 77076</dd>
+                <!-- <dt>Follow Us</dt>  -->
+            </dl>
+        </div>
+
         @if (core()->getConfigData('customer.settings.newsletter.subscription'))
             <div class="grid gap-2.5">
-                <img src="{{ bagisto_asset('images/payments-logos.webp') }}" alt="Payments logo of Visa, Mastercard, Discover, American Express" width="331" height="50">
+
                 <p
                     class="max-w-[288px] text-2xl italic leading-[45px] text-navyBlue max-md:text-2xl max-sm:text-lg"
                     role="heading"
@@ -105,12 +115,12 @@
                                 :aria-label="trans('shop::app.components.layouts.footer.email')"
                                 placeholder="email@example.com"
                             />
-    
+
                             <x-shop::form.control-group.error control-name="email" />
-    
+
                             <button
                                 type="submit"
-                                class="absolute top-1.5 flex w-max items-center rounded-xl bg-white px-7 py-2.5 font-medium hover:bg-zinc-100 max-md:top-1 max-md:px-5 max-md:text-xs max-sm:mt-0 max-sm:rounded-lg max-sm:px-4 max-sm:py-2 ltr:right-2 rtl:left-2"
+                                class="absolute top-1.5 flex w-max items-center rounded-xl bg-white px-7 py-1.5 font-medium hover:bg-zinc-100 max-md:top-1 max-md:px-5 max-md:text-xs max-sm:mt-0 max-sm:rounded-lg max-sm:px-4 max-sm:py-2 ltr:right-2 rtl:left-2"
                             >
                                 @lang('shop::app.components.layouts.footer.subscribe')
                             </button>
