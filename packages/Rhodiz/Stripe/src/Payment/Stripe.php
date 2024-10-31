@@ -27,8 +27,8 @@ class Stripe extends Payment
      */
     public function isAvailable(): bool
     {
-        //return core()->getConfigData('sales.payments.stripe.active');
-        return Cart::getCart()->grand_total >= 0.5;
+        return core()->getConfigData('sales.payment_methods.stripe.active');
+        //return Cart::getCart()->grand_total >= 0.5;
     }
 
     /**
