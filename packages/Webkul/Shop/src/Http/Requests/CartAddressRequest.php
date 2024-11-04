@@ -5,7 +5,7 @@ namespace Webkul\Shop\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Core\Rules\Address;
 use Webkul\Core\Rules\PhoneNumber;
-use Webkul\Core\Rules\ZipCode;
+use Webkul\Core\Rules\ZIPCode;
 
 class CartAddressRequest extends FormRequest
 {
@@ -56,7 +56,7 @@ class CartAddressRequest extends FormRequest
             "{$addressType}.city"         => ['required'],
             "{$addressType}.country"      => core()->isCountryRequired() ? ['required'] : ['nullable'],
             "{$addressType}.state"        => core()->isStateRequired() ? ['required'] : ['nullable'],
-            "{$addressType}.postcode"     => ['required', new ZipCode],
+            "{$addressType}.postcode"     => ['required', new ZIPCode],
             "{$addressType}.phone"        => ['required', new PhoneNumber],
         ]);
     }
