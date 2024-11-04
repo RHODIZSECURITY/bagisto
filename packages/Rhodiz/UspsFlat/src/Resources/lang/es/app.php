@@ -5,6 +5,22 @@ return [
         'layouts' => [
 
         ],
+        'address' => [
+            'modal_suggestion' => [
+                'title'              => 'Por Favor, Confirme Su Dirección',
+                'description'        => 'Si la dirección sugerida es correcta, seleccione ACEPTAR SUGERENCIA. De lo contrario, seleccione GUARDAR para conservar la dirección que ingresó.',
+                'button-save'        => 'Guardar',
+                'button-accept'      => 'Aceptar Sugerencia',
+                'address-entered'    => 'Dirección Ingresada',
+                'address-suggested'  => 'Dirección Sugerida',
+            ],
+            'modal_invalid' => [
+                'title'              => 'No Se Pudo Verificar La Dirección',
+                'description'        => 'Revise cuidadosamente su dirección. Seleccione EDITAR para realizar cambios o seleccione GUARDAR si la dirección es correcta.',
+                'button-save'        => 'Guardar',
+                'button-accept'      => 'Editar'
+            ],
+        ],
     ],
 
     'admin' => [

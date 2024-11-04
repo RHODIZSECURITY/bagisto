@@ -2,7 +2,7 @@
     <!-- Page Title -->
     <x-slot:title>
         @lang('shop::app.customers.account.addresses.edit.edit')
-        @lang('shop::app.customers.account.addresses.edit.title') 
+        @lang('shop::app.customers.account.addresses.edit.title')
     </x-slot>
 
     <!-- Breadcrumbs -->
@@ -218,8 +218,8 @@
                         :label="trans('shop::app.customers.account.addresses.edit.country')"
                     >
                         @foreach (core()->countries() as $country)
-                            <option 
-                                {{ $country->code === config('app.default_country') ? 'selected' : '' }}  
+                            <option
+                                {{ $country->code === config('app.default_country') ? 'selected' : '' }}
                                 value="{{ $country->code }}"
                             >
                                 {{ $country->name }}
@@ -247,7 +247,7 @@
                             :label="trans('shop::app.customers.account.addresses.edit.state')"
                             :placeholder="trans('shop::app.customers.account.addresses.edit.state')"
                         >
-                            <option 
+                            <option
                                 v-for='(state, index) in countryStates[addressData.country]'
                                 :value="state.code"
                             >
@@ -333,13 +333,17 @@
 
                 {!! view_render_event('bagisto.shop.customers.account.addresses.edit_form_controls.phone.after', ['address' => $address]) !!}
 
-                <button
-                    type="submit" id="submit_address_btn"
-                    class="primary-button m-0 block rounded-2xl px-11 py-3 text-center text-base max-md:w-full max-md:max-w-full max-md:rounded-lg max-md:py-1.5"
-                >
-                    @lang('shop::app.customers.account.addresses.edit.update-btn')
-                </button>
-                
+                <div class="mt-4 flex justify-begin">
+                    <x-shop::button
+                        type="submit"  id="submit_address_btn"
+                        class="primary-button rounded-2xl px-11 py-3 max-md:rounded-lg max-sm:w-full max-sm:max-w-full max-sm:py-1.5"
+                        :title="trans('shop::app.customers.account.addresses.edit.update-btn')"
+                        ::loading="isStoring"
+                        ::disabled="isStoring"
+                        @click="handleFormSubmit"
+                    />
+                </div>
+
                 {!! view_render_event('bagisto.shop.customers.account.address.edit_form_controls.after', ['address' => $address]) !!}
 
             </x-shop::form>
@@ -348,10 +352,6 @@
         <script type="module">
             app.component('v-edit-customer-address', {
                 template: '#v-edit-customer-address-template',
-
-                mounted() {
-                    this.listenAddressEvents();
-                },
 
                 data() {
                     return {
@@ -362,6 +362,8 @@
                         },
 
                         countryStates: @json(core()->groupedStatesByCountries()),
+
+                        isStoring: false,
                     };
                 },
 
@@ -369,148 +371,197 @@
                     haveStates() {
                         return !!this.countryStates[this.addressData.country]?.length;
                     },
-
-                    listenAddressEvents() {
+                    handleFormSubmit() {
 
                         let myAxios = this.$axios;
                         let myEmiter = this.$emitter;
                         let submitBtn = document.getElementById('submit_address_btn');
+                        let printAdresses =  this.printAdresses;
+                        let setIsStoring = this.setIsStoring;
 
-                        submitBtn.addEventListener('click', function(event) {
+                        try {
 
-                            try {
+                            event.preventDefault();
 
-                                event.preventDefault();
+                            setIsStoring(true);
 
-                                submitBtn.disabled = true;
+                            const formulario = document.getElementById('submit_adress_form');
+                            const formData = new FormData(formulario);
 
-                                const formulario = document.getElementById('submit_adress_form');
-                                const formData = new FormData(formulario);
+                            function isInvalid(value) {
+                                if (Array.isArray(value)) {
+                                    return value.length === 0 || value.some(v => v.trim() === '');
+                                }
+                                return !value || value.trim().length === 0;
+                            }
 
-                                function isInvalid(value) {
-                                    if (Array.isArray(value)) {
-                                        return value.length === 0 || value.some(v => v.trim() === '');
+                            // Crear el JSON en el formato requerido
+                            const params = {
+                                address: formData.getAll('address[]'), // La dirección como un array con un solo elemento
+                                city: formData.get('city'),
+                                postcode: formData.get('postcode'),
+                                state: formData.get('state'),
+
+                                first_name: formData.get('first_name'),
+                                last_name: formData.get('last_name'),
+                                country: formData.get('country'),
+                                email: formData.get('email'),
+                                phone: formData.get('phone')
+                            };
+
+                            const direccionEntrada = `${params.address}, ${params.state}, ${params.city}, ${params.postcode}`;
+
+                            // Validar cada campo en 'params'
+                            const hasEmptyField = Object.keys(params).some(key => isInvalid(params[key]));
+
+                            if (hasEmptyField) {
+                                formulario.submit();
+                                return;
+                            }
+
+                            //Pedir la validacion primero
+                            myAxios.post('{{ route('rhodiz.usps.addresses.validate') }}', params)
+                                .then(response => {
+
+                                    setIsStoring(false);
+
+                                    let address = response.data.data.address;
+                                    let city = response.data.data.city;
+                                    let postcode = response.data.data.postcode;
+                                    let state = response.data.data.state;
+
+                                    //Si los parametros son identicos no muestro nada al cliente
+                                    if (params['address']==address && params['city']==city &&
+                                        params['postcode']==postcode && params['state']==state) {
+                                        formulario.submit();
+                                        return;
                                     }
-                                    return !value || value.trim().length === 0;
-                                }
 
-                                // Crear el JSON en el formato requerido
-                                const params = {
-                                    address: formData.getAll('address[]'), // La dirección como un array con un solo elemento
-                                    city: formData.get('city'),
-                                    postcode: formData.get('postcode'),
-                                    state: formData.get('state'),
+                                    //Se recibe una correccion
+                                    let direccionSugerida = `${address}, ${state}, ${city}, ${postcode}`;
 
-                                    first_name: formData.get('first_name'),
-                                    last_name: formData.get('last_name'),
-                                    country: formData.get('country'),
-                                    email: formData.get('email'),
-                                    phone: formData.get('phone')
-                                };
+                                    this.$emitter.emit('open-confirm-modal', {
+                                        title: "{{ __('usps_flat::app.shop.address.modal_suggestion.title') }}",
+                                        message: "{{ __('usps_flat::app.shop.address.modal_suggestion.description') }}",
+                                        options: {
+                                            btnDisagree: "{{ __('usps_flat::app.shop.address.modal_suggestion.button-save') }}",
+                                            btnAgree: "{{ __('usps_flat::app.shop.address.modal_suggestion.button-accept') }}"
+                                        },
+                                        agree: () => {
 
-                                // Validar cada campo en 'params'
-                                const hasEmptyField = Object.keys(params).some(key => isInvalid(params[key]));
+                                            console.log("cambios sugeridos -guardar CON cambios- agree");
 
-                                if (hasEmptyField) {
-                                    formulario.submit();
-                                }
+                                            //Corregir la direccion
+                                            // Establece valores para los controles de texto específicos usando su id
+                                            document.getElementById('address').value = address;
+                                            document.getElementById('city').value = city;
+                                            document.getElementById('postcode').value = postcode;
+                                            document.getElementById('state').value = state;
 
-                                console.log(params);
-                                //console.this.$axios);
-
-                                //Pedir la validacion primero
-                                myAxios.post('{{ route('rhodiz.usps.addresses.validate') }}', params)
-                                    .then(response => {
-
-                                        let address = response.data.data.address;
-                                        let city = response.data.data.city;
-                                        let postcode = response.data.data.postcode;
-                                        let state = response.data.data.state;
-
-                                        //Si los parametros son identicos no muestro nada al cliente
-                                        if (params['address']==address && params['city']==city &&
-                                            params['postcode']==postcode && params['state']==state) {
-                                            //submitBtn.disabled = false;
                                             formulario.submit();
-                                            return;
+                                        },
+                                        disagree: () => {
+                                            console.log("cambios sugeridos -guardar sin cambios- disagree");
+
+                                            formulario.submit();
                                         }
-
-                                        //Se recibe una correccion
-                                        const direccionSugerida = `${address}, ${state}, ${city}, ${postcode}`;
-                                        const messageDeSugerencia = `Direccion sugerida: ${direccionSugerida}. Seleccione USAR SUGERENCIA si la sugerencia es correcta. Seleccione GUARDAR ASI para guardar la direccion que usted ingreso`;
-
-                                        myEmiter.emit('open-confirm-modal', {
-                                            title: 'Aseguremonos de que su direccion sea correcta',
-                                            message: messageDeSugerencia,
-                                            options: {
-                                                btnDisagree: "Guardar asi",
-                                                btnAgree: "Usar Sugerencia"
-                                            },
-                                            agree: () => {
-
-                                                console.log("cambios sugeridos -guardar CON cambios- agree");
-
-                                                //Corregir la direccion
-                                                // Establece valores para los controles de texto específicos usando su id
-                                                document.getElementById('address').value = address;
-                                                document.getElementById('city').value = city;
-                                                document.getElementById('postcode').value = postcode;
-                                                document.getElementById('state').value = state;
-
-                                                submitBtn.disabled = false;
-
-                                                formulario.submit();
-                                            },
-                                            disagree: () => {
-
-                                                submitBtn.disabled = false;
-
-                                                console.log("cambios sugeridos -guardar sin cambios- disagree");
-
-                                                formulario.submit();
-                                            }
-                                        });
-
-                                    })
-                                    .catch(error => {
-
-                                        console.log("direccion no valida");
-
-                                        //No es valida la direccion
-                                        myEmiter.emit('open-confirm-modal', {
-                                            title: 'No podemos confirmar su direccion',
-                                            message: 'Compruebe que su direccion sea correcta y seleccione EDITAR si necesita modificar su direccion. Si la direccion que usted entro es correcta entonces seleccione GUARDAR ASI',
-                                            options: {
-                                                btnDisagree: "Guardar asi",
-                                                btnAgree: "Editar"
-                                            },
-                                            agree: () => {
-                                                //Seguir editando
-                                                submitBtn.disabled = false;
-                                                console.log("direccion no valida -seguir editando- DISAGREEE");
-                                            },
-                                            disagree: () => {
-                                                submitBtn.disabled = false;
-                                                console.log("direccion no valida -guardar cambios- AGREEE");
-                                                formulario.submit();
-                                            }
-                                        });
-
-                                        //return Promise.reject(error);
                                     });
 
+                                    printAdresses(direccionEntrada, direccionSugerida);
+                                })
+                                .catch(error => {
+                                    //console.log(error);
+                                    //console.log("direccion no valida");
+                                    setIsStoring(false);
+
+                                    //No es valida la direccion
+                                    myEmiter.emit('open-confirm-modal', {
+                                        title: "{{ __('usps_flat::app.shop.address.modal_invalid.title') }}",
+                                        message: "{{ __('usps_flat::app.shop.address.modal_invalid.description') }}",
+                                        options: {
+                                            btnDisagree: "{{ __('usps_flat::app.shop.address.modal_invalid.button-save') }}",
+                                            btnAgree: "{{ __('usps_flat::app.shop.address.modal_invalid.button-accept') }}"
+                                        },
+                                        agree: () => {
+                                            //Seguir editando
+                                            console.log("direccion no valida -seguir editando- DISAGREEE");
+                                        },
+                                        disagree: () => {
+
+                                            console.log("direccion no valida -guardar cambios- AGREEE");
+                                            formulario.submit();
+                                        }
+                                    });
+
+                                    //return Promise.reject(error);
+                                });
+
                             } catch (error) {
-
-
+                                setIsStoring(false);
                                 console.error('Error de red:', error);
-                                submitBtn.disabled = false;
+
                                 //Si hay errores entonces envio el formulario
-                                //formulario.submit();
+                                formulario.submit();
                             }
-                        });
-                    },
-                },
+
+                        },
+                        printAdresses(direccionEntrada, direccionSugerida) {
+
+                            // Obtenemos el elemento donde se mostrará el mensaje
+                            const modalConfirmMsg = document.getElementById('modal_confirm_msg');
+
+                            direccionEntrada = direccionEntrada.toUpperCase();
+
+                            // Dividimos las direcciones por comas y eliminamos espacios extra
+                            const partesEntrada = direccionEntrada.split(',').map(part => part.trim());
+                            const partesSugerida = direccionSugerida.split(',').map(part => part.trim());
+
+                            // Creamos el contenido HTML con estilo inline
+                            let contenidoEntrada = '';
+                            let contenidoSugerida = '';
+
+                            for (let i = 0; i < partesEntrada.length; i++) {
+                                // Comparamos cada parte y resaltamos las diferencias
+                                if (partesEntrada[i] === partesSugerida[i]) {
+                                    contenidoEntrada += `<span>${partesEntrada[i]}</span>, `;
+                                    contenidoSugerida += `<span>${partesSugerida[i]}</span>, `;
+                                } else {
+                                    contenidoEntrada += `<span style="color: red; font-weight: bold;">${partesEntrada[i]}</span>, `;
+                                    contenidoSugerida += `<span style="color: green; font-weight: bold;">${partesSugerida[i]}</span>, `;
+                                }
+                            }
+
+                            // Eliminamos la última coma y espacio
+                            contenidoEntrada = contenidoEntrada.slice(0, -2);
+                            contenidoSugerida = contenidoSugerida.slice(0, -2);
+
+                            const dirEntradaMsg = "{{ __('usps_flat::app.shop.address.modal_suggestion.address-entered') }}";
+                            const dirSugeridaMsg = "{{ __('usps_flat::app.shop.address.modal_suggestion.address-suggested') }}";
+
+                            // Insertamos el contenido HTML en el div
+                            modalConfirmMsg.innerHTML = `<br>
+                            <div style="padding: 0px; font-family: Arial, sans-serif; color: #333;">
+                                <div style="margin-bottom: 8px;">
+                                <span style="font-weight: bold; color: black;">${dirEntradaMsg}:</span>
+                                <div style="background-color: #fffbea; padding: 8px; border-radius: 4px;">
+                                    ${contenidoEntrada}
+                                </div>
+                                </div>
+                                <div>
+                                <span style="font-weight: bold; color: black;">${dirSugeridaMsg}:</span>
+                                <div style="background-color: #e6ffed; padding: 8px; border-radius: 4px;">
+                                    ${contenidoSugerida}
+                                </div>
+                                </div>
+                            </div>
+                            `;
+                        },
+                        setIsStoring(value) {
+                            this.isStoring = value;
+                        }
+                }
             });
+
         </script>
     @endpush
 

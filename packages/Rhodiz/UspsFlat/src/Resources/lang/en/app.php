@@ -5,6 +5,22 @@ return [
         'layouts' => [
 
         ],
+        'address' => [
+            'modal_suggestion' => [
+                'title'              => 'Please Confirm Your Address',
+                'description'        => 'If the suggested address is accurate, please select ACCEPT SUGGESTION. Otherwise, select SAVE to retain the address you provided.',
+                'button-save'        => 'Save',
+                'button-accept'      => 'Accept Suggestion',
+                'address-entered'    => 'Entered Address',
+                'address-suggested'  => 'Suggested Address',
+            ],
+            'modal_invalid' => [
+                'title'              => 'Address Could Not Be Verified',
+                'description'        => 'Please review your address carefully. Select EDIT to make any changes, or select SAVE if the address is correct.',
+                'button-save'        => 'Save',
+                'button-accept'      => 'Edit'
+            ],
+        ],
     ],
 
     'admin' => [
