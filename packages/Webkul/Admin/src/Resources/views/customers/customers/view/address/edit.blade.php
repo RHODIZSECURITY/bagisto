@@ -12,7 +12,7 @@
         <div>
             <!-- Address Edit Button -->
             @if (bouncer()->hasPermission('customers.addresses.edit'))
-                <p 
+                <p
                     class="cursor-pointer text-blue-600 transition-all hover:underline"
                     @click="$refs.customerAddressModal.toggle()"
                 >
@@ -38,7 +38,7 @@
                         <x-slot:header>
                             <p class="text-lg font-bold text-gray-800 dark:text-white">
                                 @lang('admin::app.customers.customers.view.address.edit.title')
-                            </p>    
+                            </p>
                         </x-slot>
 
                         <!-- Modal Content -->
@@ -51,7 +51,7 @@
                                     ::value="address.customer_id"
                                 />
                             </x-admin::form.control-group>
-            
+
                             <x-admin::form.control-group>
                                 <x-admin::form.control-group.control
                                     type="hidden"
@@ -80,7 +80,7 @@
 
                                 <!-- Vat Id -->
                                 <x-admin::form.control-group class="w-full">
-                                    
+
                                     <x-admin::form.control-group.control
                                         type="hidden"
                                         name="vat_id"
@@ -142,7 +142,7 @@
                                     id="address[0]"
                                     name="address[0]"
                                     ::value="address.address.split('\n')[0]"
-                                    rules="required"
+                                    rules="required|address"
                                     :label="trans('admin::app.customers.customers.view.address.edit.street-address')"
                                     :placeholder="trans('admin::app.customers.customers.view.address.edit.street-address')"
                                 />
@@ -199,7 +199,7 @@
                                         type="text"
                                         name="postcode"
                                         ::value="address.postcode"
-                                        rules="required|integer"
+                                        rules="required|ZIPcode"
                                         :label="trans('admin::app.customers.customers.view.address.edit.post-code')"
                                         :placeholder="trans('admin::app.customers.customers.view.address.edit.post-code')"
                                     />
@@ -223,8 +223,8 @@
                                         v-model="address.country"
                                     >
                                         @foreach (core()->countries() as $country)
-                                            <option 
-                                                {{ $country->code === config('app.default_country') ? 'selected' : '' }}  
+                                            <option
+                                                {{ $country->code === config('app.default_country') ? 'selected' : '' }}
                                                 value="{{ $country->code }}"
                                             >
                                                 {{ $country->name }}
@@ -251,7 +251,7 @@
                                             :placeholder="trans('admin::app.customers.customers.view.address.edit.state')"
                                             v-model="address.state"
                                         >
-                                            <option 
+                                            <option
                                                 v-for='(state, index) in countryStates[address.country]'
                                                 :value="state.code"
                                             >
@@ -299,7 +299,7 @@
                                     <x-admin::form.control-group.label class="required">
                                         @lang('admin::app.customers.customers.view.address.edit.email')
                                     </x-admin::form.control-group.label>
-    
+
                                     <x-admin::form.control-group.control
                                         type="text"
                                         name="email"
@@ -308,7 +308,7 @@
                                         :label="trans('admin::app.customers.customers.view.address.edit.email')"
                                         :placeholder="trans('admin::app.customers.customers.view.address.edit.email')"
                                     />
-    
+
                                     <x-admin::form.control-group.error control-name="email" />
                                 </x-admin::form.control-group>
                             </div>
@@ -339,7 +339,7 @@
 
                             {!! view_render_event('bagisto.admin.customers.edit.after') !!}
                         </x-slot>
-        
+
                         <!-- Modal Footer -->
                         <x-slot:footer>
                             <!-- Save Button -->
@@ -389,7 +389,7 @@
                     formData.append('default_address', formData.get('default_address') ? 1 : 0);
 
                     this.$axios.post(`{{ route('admin.customers.customers.addresses.update', '') }}/${params?.address_id}`, formData)
-                        .then((response) => {                            
+                        .then((response) => {
                             this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
                             this.$emit('address-updated', response.data.data);

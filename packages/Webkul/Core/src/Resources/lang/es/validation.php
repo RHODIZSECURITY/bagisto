@@ -2,6 +2,7 @@
 
 return [
     'address'                 => 'El :attribute sólo puede aceptar caracteres alfabéticos, numéricos, espacios, coma y guiones.',
+    'zip-code'                => 'El :attribute sólo puede aceptar caracteres numéricos de 5 digitos',
     'alpha-numeric-space'     => 'El :attribute sólo puede aceptar caracteres alfabéticos, numéricos y espacios.',
     'code'                    => 'O :attribute debe ser válido.',
     'decimal'                 => 'O :attribute debe ser válido.',

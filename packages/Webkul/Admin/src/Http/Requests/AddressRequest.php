@@ -3,7 +3,9 @@
 namespace Webkul\Admin\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Webkul\Core\Rules\Address;
 use Webkul\Core\Rules\PhoneNumber;
+use Webkul\Core\Rules\ZIPCode;
 use Webkul\Customer\Rules\VatIdRule;
 
 class AddressRequest extends FormRequest
@@ -29,13 +31,13 @@ class AddressRequest extends FormRequest
             'company_name'    => ['nullable'],
             'first_name'      => ['required'],
             'last_name'       => ['required'],
-            'address'         => ['required', 'array', 'min:1'],
+            'address'         => ['required', 'array',  new Address],
             'country'         => ['required'],
             'state'           => ['required'],
             'city'            => ['required'],
-            'postcode'        => ['required', 'numeric'],
+            'postcode'        => ['required', new ZIPCode],
             'phone'           => ['required', new PhoneNumber],
-            'vat_id'          => [new VatIdRule],
+            'vat_id'          => ['nullable'],
             'email'           => ['required'],
             'default_address' => ['sometimes', 'required', 'in:0,1'],
         ];
