@@ -39,7 +39,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate = new CartShippingRate;
 
             $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Rate Shipping';
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Shipping';
             $cartShippingRate->method = 'no_shipping';
             $cartShippingRate->method_title = 'Empty Cart';
             $cartShippingRate->method_description = 'There are no products in the cart.';
@@ -90,7 +90,7 @@ class UspsFlat extends AbstractShipping
             // Handle no Machinable cart
             $cartShippingRate = new CartShippingRate;
             $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Rate Shipping';
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Shipping';
             $cartShippingRate->method = 'too_big_shipping';
             $cartShippingRate->method_title = 'Cart is too Big';
             $cartShippingRate->method_description = 'There are too many products in the cart.';
@@ -194,44 +194,44 @@ class UspsFlat extends AbstractShipping
         if ($description=="USPS Ground Advantage Machinable Dimensional Rectangular") {
             if ($locale=="es") {
                 $descriptionTranslated = "Envío Económico USPS";
-                $delivery = "2-5 días hábiles | Opción asequible para entregas no urgentes. Incluye seguimiento y seguro básico.";
+                $delivery = "2-5 días hábiles"; // | Opción asequible para entregas no urgentes. Incluye seguimiento y seguro básico.
             } else {
                 $descriptionTranslated = "USPS Economy Shipping";
-                $delivery = "2-5 business days | Affordable option for non-urgent deliveries. Includes tracking and basic insurance.";
+                $delivery = "2-5 business days"; // | Affordable option for non-urgent deliveries. Includes tracking and basic insurance.
             }
         }
 
         if ($description=="Priority Mail Machinable Dimensional Rectangular") {
             if ($locale=="es") {
                 $descriptionTranslated = "Envío Rápido USPS";
-                $delivery = "1-3 días hábiles | Opción de entrega rápida con servicio confiable. Seguimiento y seguro de hasta $100 incluidos.";
+                $delivery = "1-3 días hábiles"; // | Opción de entrega rápida con servicio confiable. Seguimiento y seguro de hasta $100 incluidos.
             } else {
-                $descriptionTranslated = "USPS Fast Shipping";
-                $delivery = "1-3 business days | Quicker delivery option with reliable service. Tracking and basic insurance included.";
+                $descriptionTranslated = "USPS Priority Shipping";
+                $delivery = "1-3 business days"; // | Quicker delivery option with reliable service. Tracking and basic insurance included.
             }
         }
 
         if ($description=="Priority Mail Express Machinable Dimensional Rectangular") {
             if ($locale=="es") {
                 $descriptionTranslated = "Envío Express USPS";
-                $delivery = "1-2 días hábiles (Garantizado) | Es la opción de entrega más rápida, con garantía de devolución de dinero. Incluye seguimiento y seguro.";
+                $delivery = "1-2 días hábiles (Garantizado)"; // | Es la opción de entrega más rápida, con garantía de devolución de dinero. Incluye seguimiento y seguro.
             } else {
                 $descriptionTranslated = "USPS Express Shipping";
-                $delivery = "1-2 business days (Guaranteed) | Fastest delivery option with a money-back guarantee. Includes tracking and insurance.";
+                $delivery = "1-2 business days (Guaranteed)"; // | Fastest delivery option with a money-back guarantee. Includes tracking and insurance.
             }
         }
 
         if (strpos($description, "Flat Rate Box") !== false) {
             if ($locale=="es") {
-                if (strpos($description, "Small")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Pequeña -USPS";
-                if (strpos($description, "Medium")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Mediana -USPS";
-                if (strpos($description, "Large")) $descriptionTranslated = "Envío Rápido Tarifa Plana -Caja Grande -USPS";
-                $delivery = "1-3 días hábiles | Opción de entrega rápida con servicio confiable. Seguimiento y seguro básico incluidos.";
+                if (strpos($description, "Small")) $descriptionTranslated = "Envío Rápido Tarifa Plana - Caja Pequeña - USPS";
+                if (strpos($description, "Medium")) $descriptionTranslated = "Envío Rápido Tarifa Plana - Caja Mediana - USPS";
+                if (strpos($description, "Large")) $descriptionTranslated = "Envío Rápido Tarifa Plana - Caja Grande - USPS";
+                $delivery = "1-3 días hábiles"; // | Opción de entrega rápida con servicio confiable. Seguimiento y seguro básico incluidos.
             } else {
-                if (strpos($description, "Small")) $descriptionTranslated = "Flat Rate Fast Mail - Small Box -USPS";
-                if (strpos($description, "Medium")) $descriptionTranslated = "Flat Rate Fast Mail - Medium Box -USPS";
-                if (strpos($description, "Large")) $descriptionTranslated = "Flat Rate Fast Mail - Large Box -USPS";
-                $delivery = "1-3 business days | Quicker delivery option with reliable service. Tracking and basic insurance included.";
+                if (strpos($description, "Small")) $descriptionTranslated = "Flat Rate Fast Mail - Small Box - USPS";
+                if (strpos($description, "Medium")) $descriptionTranslated = "Flat Rate Fast Mail - Medium Box - USPS";
+                if (strpos($description, "Large")) $descriptionTranslated = "Flat Rate Fast Mail - Large Box - USPS";
+                $delivery = "1-3 business days"; // | Quicker delivery option with reliable service. Tracking and basic insurance included.
             }
         }
 
@@ -254,7 +254,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate = new CartShippingRate;
 
             $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Optimized Flat Rate Shipping';
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
             $cartShippingRate->method = 'no_shipping';
             $cartShippingRate->method_title = 'Empty Cart';
             $cartShippingRate->method_description = 'There are no products in the cart.';
@@ -537,7 +537,7 @@ class UspsFlat extends AbstractShipping
             $cartShippingRate = new CartShippingRate;
 
             $cartShippingRate->carrier = $this->getCode();
-            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Flat Rate Shipping';
+            $cartShippingRate->carrier_title = $this->getConfigData('title') ?? 'USPS Shipping';
             $cartShippingRate->method = 'exceeds_weight_limit';
             $cartShippingRate->method_title = 'Weight Exceeded';
             $cartShippingRate->method_description = 'The total weight of the cart exceeds the allowed limit for shipping.';

@@ -3,8 +3,8 @@
 return [
     [
         'key'    => 'sales.carriers.usps_flat',
-        'info'   => 'Get real-time USPS price rates through your API, based on the weight/dimensions/of the cart and customer address.',
-        'name'   => 'Usps Shipping',
+        'info'   => 'Get real-time USPS price rates through your API, based on the weight/dimensions of the cart and customer address.',
+        'name'   => 'USPS Shipping',
         'sort'   => 20,
         'fields' => [
             [
