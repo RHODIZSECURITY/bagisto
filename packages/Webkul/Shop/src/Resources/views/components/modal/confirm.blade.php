@@ -50,10 +50,13 @@
                                     </div>
 
                                     <div class="pb-5 pt-1.5 text-left text-sm text-gray-500" id="modal_confirm_msg">
+                                    </div>
+
+                                    <div class="pb-5 pt-1.5 text-left text-sm text-gray-500">
                                         @{{ message }}
                                     </div>
 
-                                    <div class="flex justify-end gap-2.5">
+                                    <div class="flex justify-center gap-2.5">
                                         <button
                                             type="button"
                                             class="secondary-button max-md:py-3 max-sm:px-6 max-sm:py-2.5"
@@ -67,7 +70,7 @@
                                             class="primary-button max-md:py-3 max-sm:px-6 max-sm:py-2.5"
                                             @click="agree"
                                         >
-                                            @{{ options.btnAgree }} 
+                                            @{{ options.btnAgree }}
                                         </button>
                                     </div>
                                 </div>

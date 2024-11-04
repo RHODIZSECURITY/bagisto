@@ -262,7 +262,7 @@
                     v-slot="{ meta, errors, handleSubmit }"
                     as="div"
                 >
-                    <form @submit="handleSubmit($event, validateThenUpdateOrCreateAddress)">
+                    <form @submit="handleSubmit($event, validateThenUpdateOrCreateAddress)"  id="submit_adress_form">
                         <!-- Billing Address Header -->
                         <div class="mb-4 flex items-center justify-between">
                             <h2 class="text-xl font-medium max-md:text-base max-sm:font-normal">
@@ -285,7 +285,7 @@
                                 @lang('shop::app.checkout.onepage.address.back')
                             </span>
                         </div>
-                        
+
                         <!-- Address Form Vue Component -->
                         <v-checkout-address-form
                             :control-name="activeAddressForm"
@@ -339,7 +339,7 @@
                 return {
                     customerSavedAddresses: {
                         'billing': [],
-                        
+
                         'shipping': [],
                     },
 
@@ -415,7 +415,7 @@
                         });
                     } else {
                         this.selectedAddresses[type + '_address_id'] = cartAddress.id;
-                        
+
                         addresses.unshift(cartAddress);
                     }
 
@@ -532,8 +532,8 @@
                     this.isStoring = true;
 
                     let myEmiter = this.$emitter;
-
-                    //console.log(params);
+                    let printAdresses =  this.printAdresses;
+                    let clearAdresses =  this.clearAdresses;
 
                     params = params[this.activeAddressForm];
 
@@ -541,32 +541,39 @@
                     this.$axios.post('{{ route('rhodiz.usps.addresses.validate') }}', params)
                     .then(response => {
 
+                        clearAdresses();
+
+                        console.log(params);
+                        console.log(response.data.data);
+                        this.isStoring = false;
+
                         let address = response.data.data.address;
                         let city = response.data.data.city;
                         let postcode = response.data.data.postcode;
                         let state = response.data.data.state;
 
                         //Si los parametros son identicos no muestro nada al cliente
-                        if (params['address']==address && params['city']==city &&
-                            params['postcode']==postcode && params['state']==state) {
+                        if (params['address'][0].toUpperCase()==address && params['city'].toUpperCase()==city &&
+                            params['postcode'].toUpperCase()==postcode && params['state'].toUpperCase()==state) {
 
                             this.updateOrCreateAddress(params, { setErrors });
                             return;
                         }
 
+                        const direccionEntrada = `${params.address}, ${params.state}, ${params.city}, ${params.postcode}`;
+
                         //Se recibe una correccion
                         const direccionSugerida = `${address}, ${state}, ${city}, ${postcode}`;
-                        const messageDeSugerencia = `Direccion sugerida: ${direccionSugerida}. Seleccione USAR SUGERENCIA si la sugerencia es correcta. Seleccione GUARDAR ASI para guardar la direccion que usted ingreso`;
 
                         myEmiter.emit('open-confirm-modal', {
-                            title: 'Aseguremonos de que su direccion sea correcta',
-                            message: messageDeSugerencia,
+                            title: "{{ __('usps_flat::app.shop.address.modal_suggestion.title') }}",
+                            message: "{{ __('usps_flat::app.shop.address.modal_suggestion.description') }}",
                             options: {
-                                btnDisagree: "Guardar asi",
-                                btnAgree: "Usar Sugerencia"
+                                btnDisagree: "{{ __('usps_flat::app.shop.address.modal_suggestion.button-save') }}",
+                                btnAgree: "{{ __('usps_flat::app.shop.address.modal_suggestion.button-accept') }}"
                             },
                             agree: () => {
-                               
+
                                 //Corregir la direccion
                                 params.address[0] = address;
                                 params.city = city;
@@ -581,23 +588,29 @@
                             }
                         });
 
+                        printAdresses(direccionEntrada, direccionSugerida);
+
                     })
                     .catch(error => {
 
+                        clearAdresses();
+
+                        console.log(error);
                         console.log("direccion no valida");
+
+                        this.isStoring = false;
 
                         //No es valida la direccion
                         myEmiter.emit('open-confirm-modal', {
-                            title: 'No podemos confirmar su direccion',
-                            message: 'Compruebe que su direccion sea correcta y seleccione EDITAR si necesita modificar su direccion. Si la direccion que usted entro es correcta entonces seleccione GUARDAR ASI',
+                            title: "{{ __('usps_flat::app.shop.address.modal_invalid.title') }}",
+                            message: "{{ __('usps_flat::app.shop.address.modal_invalid.description') }}",
                             options: {
-                                btnDisagree: "Guardar asi",
-                                btnAgree: "Editar"
+                                btnDisagree: "{{ __('usps_flat::app.shop.address.modal_invalid.button-save') }}",
+                                btnAgree: "{{ __('usps_flat::app.shop.address.modal_invalid.button-accept') }}"
                             },
                             agree: () => {
                                 console.log("AGREEE");
                                 //Seguir editando
-                                this.isStoring = false;
                             },
                             disagree: () => {
                                 console.log("DISAGREEE");
@@ -608,7 +621,62 @@
                         //return Promise.reject(error);
                     });
                 },
+                printAdresses(direccionEntrada, direccionSugerida) {
 
+                    // Obtenemos el elemento donde se mostrará el mensaje
+                    const modalConfirmMsg = document.getElementById('modal_confirm_msg');
+
+                    direccionEntrada = direccionEntrada.toUpperCase();
+
+                    // Dividimos las direcciones por comas y eliminamos espacios extra
+                    const partesEntrada = direccionEntrada.split(',').map(part => part.trim());
+                    const partesSugerida = direccionSugerida.split(',').map(part => part.trim());
+
+                    // Creamos el contenido HTML con estilo inline
+                    let contenidoEntrada = '';
+                    let contenidoSugerida = '';
+
+                    for (let i = 0; i < partesEntrada.length; i++) {
+                        // Comparamos cada parte y resaltamos las diferencias
+                        if (partesEntrada[i] === partesSugerida[i]) {
+                            contenidoEntrada += `<span>${partesEntrada[i]}</span>, `;
+                            contenidoSugerida += `<span>${partesSugerida[i]}</span>, `;
+                        } else {
+                            contenidoEntrada += `<span style="color: red; font-weight: bold;">${partesEntrada[i]}</span>, `;
+                            contenidoSugerida += `<span style="color: green; font-weight: bold;">${partesSugerida[i]}</span>, `;
+                        }
+                    }
+
+                    // Eliminamos la última coma y espacio
+                    contenidoEntrada = contenidoEntrada.slice(0, -2);
+                    contenidoSugerida = contenidoSugerida.slice(0, -2);
+
+                    const dirEntradaMsg = "{{ __('usps_flat::app.shop.address.modal_suggestion.address-entered') }}";
+                    const dirSugeridaMsg = "{{ __('usps_flat::app.shop.address.modal_suggestion.address-suggested') }}";
+
+                    // Insertamos el contenido HTML en el div
+                    modalConfirmMsg.innerHTML = `<br>
+                    <div style="padding: 0px; font-family: Arial, sans-serif; color: #333;">
+                        <div style="margin-bottom: 8px;">
+                        <span style="font-weight: bold; color: black;">${dirEntradaMsg}:</span>
+                        <div style="background-color: #fffbea; padding: 8px; border-radius: 4px;">
+                            ${contenidoEntrada}
+                        </div>
+                        </div>
+                        <div>
+                        <span style="font-weight: bold; color: black;">${dirSugeridaMsg}:</span>
+                        <div style="background-color: #e6ffed; padding: 8px; border-radius: 4px;">
+                            ${contenidoSugerida}
+                        </div>
+                        </div>
+                    </div>
+                    `;
+                },
+                clearAdresses() {
+                    // Obtenemos el elemento donde se mostrará el mensaje
+                    const modalConfirmMsg = document.getElementById('modal_confirm_msg');
+                    modalConfirmMsg.innerHTML = "";
+                },
                 updateCustomerAddress(id, params, { setErrors }) {
                     this.isStoring = true;
 
