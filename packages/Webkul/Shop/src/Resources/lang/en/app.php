@@ -399,7 +399,7 @@ return [
                 'bagisto'           => 'Bagisto',
                 'cart'              => 'Cart',
                 'compare'           => 'Compare',
-                'dropdown-text'     => 'Manage Cart, Orders & Wishlist',
+                'dropdown-text'     => 'Manage Orders, Addresses & Wishlist',
                 'logout'            => 'Logout',
                 'no-category-found' => 'No category found.',
                 'orders'            => 'Orders',
