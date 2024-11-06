@@ -99,7 +99,8 @@
             "Webkul\\ImageZoom\\": "packages/Webkul/ImageZoom/src",
             "Rhodiz\\Stripe\\": "packages/Rhodiz/Stripe/src",
             "Rhodiz\\Usps\\": "packages/Rhodiz/Usps/src",
-            "Rhodiz\\UspsFlat\\": "packages/Rhodiz/UspsFlat/src"
+            "Rhodiz\\UspsFlat\\": "packages/Rhodiz/UspsFlat/src",
+            "Rhodiz\\Config\\": "packages/Rhodiz/Config/src"
         }
     },
     "autoload-dev": {
