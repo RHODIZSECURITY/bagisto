@@ -2,25 +2,31 @@
 
 return [
     'shop' => [
-        'search-suggestion' => [
-            'popular-products' => 'Productos Populares',
-            'in'               => 'en',
-            'text-more'        => 'Mostrar Más',
-            'no-results'       => 'No se encontraron resultados',
-            'starting-from'    => 'Desde',
-            'searching'        => 'Buscando...',
-        ],
+        'contact' => 'Contacto',
+        'email'   => 'Correo',
+        'phone'   => 'Teléfono',
+        'address' => 'Dirección',
     ],
     'admin' => [
         'system' => [
-            'rhodiz_settings_name'=> 'Configuraciones de Rhodiz',
-            'rhodiz_settings_info'=> 'Configurar opciones de Rhodiz',
-            'settings'            => 'Configuraciones',
+            'config_name'         => 'Configuraciones de Rhodiz',
+            'info'                => 'Configurar opciones de Rhodiz',
+            'settings'            => 'Configuraciones de Rhodiz',
             'general'             => 'General',
             'status'              => 'Estado',
             'name'                => 'Nombre Empresa',
             'web'                 => 'Web url',
-            'display-products'     => 'Mostrar Productos'
+            'display-products'    => 'Mostrar Productos'
+        ],
+        'store' => [
+            'config_name'         => 'Configuraciones de la Tienda',
+            'info'                => 'Configurar opciones de Tienda',
+            'settings'            => 'Configuraciones',
+            'general'             => 'General',
+            'status'              => 'Estado',
+            'phone'               => 'Telefono de Contacto',
+            'email'               => 'Email',
+            'address'             => 'Direccion',
         ],
     ],
 ];

@@ -166,7 +166,7 @@
         </div>
 
         <p class="mb-4 mt-8 text-center text-xs text-zinc-500">
-            @lang('shop::app.customers.login-form.footer', ['current_year'=> date('Y') ])
+            @lang('shop::app.customers.login-form.footer', ['current_year'=> date('Y'), 'enterprice' => core()->getConfigData('rhodiz_config.config.general.name') ])
         </p>
     </div>
 

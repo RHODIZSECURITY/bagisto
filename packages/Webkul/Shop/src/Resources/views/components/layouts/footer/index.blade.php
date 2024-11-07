@@ -82,10 +82,10 @@
         <div class="flex flex-wrap items-start gap-24 max-1180:gap-4">
             <dl class="">
                 <img style="margin-bottom:10px" src="{{ bagisto_asset('images/payments-logos.webp') }}" alt="Payments logo of Visa, Mastercard, Discover, American Express" width="331" height="50">
-                <dt style="margin-bottom:10px" class="active">Contact:</dt>
-                <dd style="margin-bottom:10px">Phone: <a class="txtlink" href="tel:1-888-455-9995"> 1-281-763-9506</a></dd>
-                <dd style="margin-bottom:10px">Email: <a style="margin-bottom:10px" class="txtlink" href="mailto:support@vaquerasalamoda.com">support@vaquerasalamoda.com</a></dd>
-                <dd style="margin-bottom:10px"><a class="txtlink" href="#" target="_blank" rel="noopener"></a>834 Litle York RD, Houston, TX, 77076</dd>
+                <dt style="margin-bottom:10px" class="active">@lang('rhodiz_config::app.shop.contact'):</dt>
+                <dd style="margin-bottom:10px">@lang('rhodiz_config::app.shop.phone'): <a class="txtlink" href="tel:{{ core()->getConfigData('rhodiz_config.config.store.phone') }}">{{ core()->getConfigData('rhodiz_config.config.store.phone') }}</a></dd>
+                <dd style="margin-bottom:10px">@lang('rhodiz_config::app.shop.email'): <a style="margin-bottom:10px" class="txtlink" href="mailto:@lang('rhodiz_config::app.admin.store.email')"> {{ core()->getConfigData('rhodiz_config.config.store.email') }}</a></dd>
+                <dd style="margin-bottom:10px"><a class="txtlink" href="#" target="_blank" rel="noopener"></a>{{ core()->getConfigData('rhodiz_config.config.store.address') }}</dd>
                 <!-- <dt>Follow Us</dt>  -->
             </dl>
         </div>
@@ -137,7 +137,7 @@
         {!! view_render_event('bagisto.shop.layout.footer.footer_text.before') !!}
 
         <p class="text-sm text-zinc-600 max-md:text-center">
-            @lang('shop::app.components.layouts.footer.footer-text', ['current_year'=> date('Y') ])
+            @lang('shop::app.components.layouts.footer.footer-text', ['current_year'=> date('Y'), 'enterprice' => core()->getConfigData('rhodiz_config.config.general.name') ])
         </p>
 
         {!! view_render_event('bagisto.shop.layout.footer.footer_text.after') !!}
