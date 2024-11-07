@@ -13,7 +13,7 @@ class ConfigServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../Resources/views', 'rhodiz_config');
+        //$this->loadViewsFrom(__DIR__.'/../Resources/views', 'rhodiz_config');
 
         $this->loadRoutesFrom(__DIR__.'/../Routes/routes.php');
 
