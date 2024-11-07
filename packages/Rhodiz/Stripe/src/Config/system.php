@@ -3,7 +3,7 @@
 return [
     [
         'key'    => 'sales.payment_methods.stripe',
-        'info'   => 'Stripe extension created for bagisto by reiarseni.',
+        'info'   => 'Stripe extension created by Rhodiz.',
         'name'   => 'Stripe',
         'sort'   => 7,
         'fields' => [
@@ -31,7 +31,7 @@ return [
             ],
             [
                 'name'          => 'stripe_api_key',
-                'title'         => 'Strip Secret Key',
+                'title'         => 'Stripe Secret Key',
                 'type'          => 'text',
                 'validation'    => 'required',
                 'channel_based' => false,

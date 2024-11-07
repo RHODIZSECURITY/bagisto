@@ -14,8 +14,8 @@ class USPSPriceRates
 
     public function __construct()
     {
-        $this->client_id = config('services.usps.client_id');
-        $this->client_secret = config('services.usps.client_secret');
+        /*$this->client_id = config('services.usps.client_id');
+        $this->client_secret = config('services.usps.client_secret');*/
     }
 
     private function getToken()
@@ -39,6 +39,9 @@ class USPSPriceRates
 
     public function getOAuthToken()
     {
+        $this->client_id     = core()->getConfigData('sales.carriers.usps_flat.USPS_CLIENT_ID');
+        $this->client_secret = core()->getConfigData('sales.carriers.usps_flat.USPS_CLIENT_SECRET');
+
         $url = 'https://api.usps.com/oauth2/v3/token';
         $data = [
             "client_id" => $this->client_id,
