@@ -92,7 +92,8 @@ class ConfigController extends Controller
 
             case 'customers.email-verification':
                 $customer = Customer::latest()->first();
-                return view('shop::emails.customers.email-verification', compact('customer'));
+                $token = "xxxx-xxxxx-xxxxxxxxxx";
+                return view('shop::emails.customers.email-verification', compact('userName','token'));
                 break;
 
             case 'customers.forgot-password':

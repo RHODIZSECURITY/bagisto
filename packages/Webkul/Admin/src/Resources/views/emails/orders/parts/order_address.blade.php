@@ -16,7 +16,7 @@
         </div>
     @endif
 
-    @if ($order->billing_address)
+    @if ($order->billing_address && !$order->same_address())
         <div style="line-height: 25px; margin-top: 20px;">
             <div style="font-size: 16px;font-weight: 600;color: #121A26;">
                 @lang('admin::app.emails.orders.billing-address')
