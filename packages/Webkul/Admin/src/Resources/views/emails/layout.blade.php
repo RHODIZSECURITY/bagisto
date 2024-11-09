@@ -11,7 +11,7 @@
 
     <body style="font-family: inter;">
         <div style="max-width: 640px; margin-left: auto; margin-right: auto;">
-            <div style="padding: 30px;">
+            <div style="padding: 20px;">
                 <!-- Email Header -->
                 <div style="margin-bottom: 65px;">
                     <a href="{{ route('shop.home.index') }}">

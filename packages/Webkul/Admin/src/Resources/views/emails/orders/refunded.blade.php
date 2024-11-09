@@ -21,80 +21,12 @@
         {{ __('admin::app.emails.orders.refunded.summary') }}
     </div>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
-        @if ($refund->order->shipping_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.shipping-address') }}
-                </div>
+    @include ('admin::emails.orders.parts.order_address', ['order' => $refund->order])
+    @include ('admin::emails.orders.parts.payments', ['order' => $refund->order])
+    @include ('admin::emails.orders.parts.shipping', ['order' => $refund->order, 'shipment' =>  null])
 
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $refund->order->shipping_address->company_name ?? '' }}<br/>
-
-                    {{ $refund->order->shipping_address->name }}<br/>
-                    
-                    {{ $refund->order->shipping_address->address }}<br/>
-                    
-                    {{ $refund->order->shipping_address->postcode . " " . $refund->order->shipping_address->city }}<br/>
-                    
-                    {{ $refund->order->shipping_address->state }}<br/>
-
-                    ---<br/>
-
-                    {{ __('admin::app.emails.orders.contact') }} : {{ $refund->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.shipping') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ $refund->order->shipping_title }}
-                </div>
-            </div>
-        @endif
-
-        @if ($refund->order->billing_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.billing-address') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $refund->order->billing_address->company_name ?? '' }}<br/>
-
-                    {{ $refund->order->billing_address->name }}<br/>
-                    
-                    {{ $refund->order->billing_address->address }}<br/>
-                    
-                    {{ $refund->order->billing_address->postcode . " " . $refund->order->billing_address->city }}<br/>
-                    
-                    {{ $refund->order->billing_address->state }}<br/>
-
-                    ---<br/>
-
-                    {{ __('admin::app.emails.orders.contact') }} : {{ $refund->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.payment') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ core()->getConfigData('sales.payment_methods.' . $refund->order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($refund->order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #384860;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
-                @endif
-            </div>
-        @endif
-    </div>
+    <br/>
+    <br/>
 
     <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
         <table style="overflow-x: auto; border-collapse: collapse;
@@ -215,7 +147,7 @@
                         {{ core()->formatBasePrice($refund->base_shipping_amount) }}
                     </span>
                 </div>
-                
+
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
                     <span>
                         @lang('admin::app.emails.orders.shipping-handling-incl-tax')

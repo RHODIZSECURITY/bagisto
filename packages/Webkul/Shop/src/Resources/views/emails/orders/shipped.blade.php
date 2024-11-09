@@ -21,102 +21,12 @@
         @lang('shop::app.emails.orders.shipped.summary')
     </div>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
-        @if ($shipment->order->shipping_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.shipping-address')
-                </div>
+    @include ('shop::emails.orders.parts.order_address', ['order' => $shipment->order])
+    @include ('shop::emails.orders.parts.payments', ['order' => $shipment->order])
+    @include ('shop::emails.orders.parts.shipping', ['order' => $shipment->order, 'shipment' =>  $shipment])
 
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $shipment->order->shipping_address->company_name ?? '' }}<br/>
-
-                    {{ $shipment->order->shipping_address->name }}<br/>
-                    
-                    {{ $shipment->order->shipping_address->address }}<br/>
-                    
-                    {{ $shipment->order->shipping_address->postcode . " " . $shipment->order->shipping_address->city }}<br/>
-                    
-                    {{ $shipment->order->shipping_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('shop::app.emails.orders.contact') : {{ $shipment->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.shipping')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ $shipment->order->shipping_title }}
-                </div>
-
-
-                <div style="font-size: 16px; color: #384860;">
-                    <div>
-                        <span>
-                            @lang('shop::app.emails.orders.carrier') : 
-                        </span>
-                        
-                        {{ $shipment->carrier_title }}
-                    </div>
-
-                    <div>
-                        <span>
-                            @lang('shop::app.emails.orders.tracking-number', ['tracking_number' =>  $shipment->track_number])
-                        </span>
-                    </div>
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($shipment->order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #384860;">
-                        <div>
-                            <span>{{ $additionalDetails->title }} : </span>
-                        </div>
-
-                        <div>
-                            <span>{{ $additionalDetails->value }} </span>
-                        </div>
-                    </div>
-                @endif
-            </div>
-        @endif
-
-        @if ($shipment->order->billing_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.billing-address')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $shipment->order->billing_address->company_name ?? '' }}<br/>
-
-                    {{ $shipment->order->billing_address->name }}<br/>
-                    
-                    {{ $shipment->order->billing_address->address }}<br/>
-                    
-                    {{ $shipment->order->billing_address->postcode . " " . $shipment->order->billing_address->city }}<br/>
-                    
-                    {{ $shipment->order->billing_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('shop::app.emails.orders.contact') : {{ $shipment->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.payment')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ core()->getConfigData('sales.payment_methods.' . $shipment->order->payment->method . '.title') }}
-                </div>
-            </div>
-        @endif
-    </div>
+    <br/>
+    <br/>
 
     <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
         <table style="overflow-x: auto; border-collapse: collapse;
@@ -126,7 +36,7 @@
                     @foreach (['sku', 'name', 'price', 'qty'] as $item)
                         <th style="text-align: left;padding: 15px">
                             @lang('shop::app.emails.orders.' . $item)
-                        </th>    
+                        </th>
                     @endforeach
                 </tr>
             </thead>

@@ -21,80 +21,12 @@
         @lang('shop::app.emails.orders.canceled.summary')
     </div>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
-        @if ($order->shipping_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.shipping-address')
-                </div>
+    @include ('shop::emails.orders.parts.order_address', ['order' => $order])
+    @include ('shop::emails.orders.parts.payments', ['order' => $order])
+    @include ('shop::emails.orders.parts.shipping', ['order' => $order, 'shipment' =>  null])
 
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $order->shipping_address->company_name ?? '' }}<br/>
-
-                    {{ $order->shipping_address->name }}<br/>
-                    
-                    {{ $order->shipping_address->address }}<br/>
-                    
-                    {{ $order->shipping_address->postcode . " " . $order->shipping_address->city }}<br/>
-                    
-                    {{ $order->shipping_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('shop::app.emails.orders.contact') : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.shipping')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ $order->shipping_title }}
-                </div>
-            </div>
-        @endif
-
-        @if ($order->billing_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.billing-address')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $order->billing_address->company_name ?? '' }}<br/>
-
-                    {{ $order->billing_address->name }}<br/>
-                    
-                    {{ $order->billing_address->address }}<br/>
-                    
-                    {{ $order->billing_address->postcode . " " . $order->billing_address->city }}<br/>
-                    
-                    {{ $order->billing_address->state }}<br/>
-
-                    ---<br/>
-
-                    @lang('shop::app.emails.orders.contact') : {{ $order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    @lang('shop::app.emails.orders.payment')
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ core()->getConfigData('sales.payment_methods.' . $order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #384860;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
-                @endif
-            </div>
-        @endif
-    </div>
+    <br/>
+    <br/>
 
     <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
         <table style="overflow-x: auto; border-collapse: collapse;
@@ -221,7 +153,7 @@
                         {{ core()->formatPrice($order->shipping_amount, $order->order_currency_code) }}
                     </span>
                 </div>
-                
+
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
                     <span>
                         @lang('shop::app.emails.orders.shipping-handling-incl-tax')

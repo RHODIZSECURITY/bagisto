@@ -247,6 +247,23 @@ class Order extends Model implements OrderContract
             ->where('address_type', OrderAddress::ADDRESS_TYPE_SHIPPING);
     }
 
+    public function same_address()
+    {
+        if (!$this->billing_address) {
+           return false;
+        }
+
+        if (!$this->shipping_address) {
+            return false;
+        }
+
+        return $this->billing_address->name == $this->shipping_address->name &&
+               $this->billing_address->address  == $this->shipping_address->address &&
+               $this->billing_address->postcode == $this->shipping_address->postcode &&
+               $this->billing_address->city == $this->shipping_address->city &&
+               $this->billing_address->state == $this->shipping_address->state;
+    }
+
     /**
      * Get shipping address for the order.
      */

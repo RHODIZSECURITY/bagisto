@@ -21,80 +21,12 @@
         {{ __('admin::app.emails.orders.invoiced.summary') }}
     </div>
 
-    <div style="display: flex;flex-direction: row;margin-top: 20px;justify-content: space-between;margin-bottom: 40px;">
-        @if ($invoice->order->shipping_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.shipping-address') }}
-                </div>
+    @include ('admin::emails.orders.parts.order_address', ['order' => $invoice->order])
+    @include ('admin::emails.orders.parts.payments', ['order' => $invoice->order])
+    @include ('admin::emails.orders.parts.shipping', ['order' => $invoice->order, 'shipment' =>  null])
 
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $invoice->order->shipping_address->company_name ?? '' }}<br/>
-
-                    {{ $invoice->order->shipping_address->name }}<br/>
-                    
-                    {{ $invoice->order->shipping_address->address }}<br/>
-                    
-                    {{ $invoice->order->shipping_address->postcode . " " . $invoice->order->shipping_address->city }}<br/>
-                    
-                    {{ $invoice->order->shipping_address->state }}<br/>
-
-                    ---<br/>
-
-                    {{ __('admin::app.emails.orders.contact') }} : {{ $invoice->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.shipping') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ $invoice->order->shipping_title }}
-                </div>
-            </div>
-        @endif
-
-        @if ($invoice->order->billing_address)
-            <div style="line-height: 25px;">
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.billing-address') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;margin-bottom: 40px;">
-                    {{ $invoice->order->billing_address->company_name ?? '' }}<br/>
-
-                    {{ $invoice->order->billing_address->name }}<br/>
-                    
-                    {{ $invoice->order->billing_address->address }}<br/>
-                    
-                    {{ $invoice->order->billing_address->postcode . " " . $invoice->order->billing_address->city }}<br/>
-                    
-                    {{ $invoice->order->billing_address->state }}<br/>
-
-                    ---<br/>
-
-                    {{ __('admin::app.emails.orders.contact') }} : {{ $invoice->order->billing_address->phone }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 600;color: #121A26;">
-                    {{ __('admin::app.emails.orders.payment') }}
-                </div>
-
-                <div style="font-size: 16px;font-weight: 400;color: #384860;">
-                    {{ core()->getConfigData('sales.payment_methods.' . $invoice->order->payment->method . '.title') }}
-                </div>
-
-                @php $additionalDetails = \Webkul\Payment\Payment::getAdditionalDetails($invoice->order->payment->method); @endphp
-
-                @if (! empty($additionalDetails))
-                    <div style="font-size: 16px; color: #384860;">
-                        <div>{{ $additionalDetails['title'] }}</div>
-                        <div>{{ $additionalDetails['value'] }}</div>
-                    </div>
-                @endif
-            </div>
-        @endif
-    </div>
+    <br/>
+    <br/>
 
     <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
         <table style="overflow-x: auto; border-collapse: collapse;
@@ -220,7 +152,7 @@
                         {{ core()->formatBasePrice($invoice->base_shipping_amount) }}
                     </span>
                 </div>
-                
+
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
                     <span>
                         @lang('admin::app.emails.orders.shipping-handling-incl-tax')
