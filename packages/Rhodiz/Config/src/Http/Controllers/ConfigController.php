@@ -86,15 +86,15 @@ class ConfigController extends Controller
 
         switch ($mailType) {
             case 'customers.commented':
-                $customer = Customer::latest()->first();
+                //$customer = Customer::latest()->first();
                 $customerNote = CustomerNote::latest()->first();
-                return view('shop::emails.customers.commented', compact('customer','customerNote'));
+                return view('shop::emails.customers.commented', compact('customerNote'));
                 break;
 
             case 'customers.email-verification':
                 $customer = Customer::first()->first();
-                $userName = "Luis Fernades";
-                return view('shop::emails.customers.email-verification', compact('customer','userName','token'));
+                //$userName = "Luis Fernandez";
+                return view('shop::emails.customers.email-verification', compact('customer'));
                 break;
 
             case 'customers.forgot-password':
