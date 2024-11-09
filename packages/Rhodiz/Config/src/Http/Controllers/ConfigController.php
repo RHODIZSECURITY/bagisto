@@ -92,8 +92,7 @@ class ConfigController extends Controller
                 break;
 
             case 'customers.email-verification':
-                $customer = Customer::latest()->first();
-                $token = "xxxx-xxxxx-xxxxxxxxxx";
+                $customer = Customer::first()->first();
                 $userName = "Luis Fernades";
                 return view('shop::emails.customers.email-verification', compact('customer','userName','token'));
                 break;
