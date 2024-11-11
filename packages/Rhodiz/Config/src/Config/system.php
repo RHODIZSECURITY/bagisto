@@ -39,6 +39,13 @@ return [
                 'channel_based' => false,
                 'locale_based'  => false,
             ],[
+                'name'          => 'new_order_customer_id',
+                'title'         => 'rhodiz_config::app.admin.system.new_order_customer_id',
+                'type'          => 'number',
+                'validation'    => 'required',
+                'channel_based' => false,
+                'locale_based'  => false,
+            ],[
                 'name'          => 'display-product',
                 'title'         => 'rhodiz_config::app.admin.system.display-products',
                 'type'          => 'boolean',

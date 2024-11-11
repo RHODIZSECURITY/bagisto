@@ -16,6 +16,7 @@ return [
             'status'              => 'Estado',
             'name'                => 'Nombre Empresa',
             'web'                 => 'Web url',
+            'new_order_customer_id'   => 'ID del cliente utilizado para crear los pedidos de la tienda',
             'display-products'    => 'Mostrar Productos'
         ],
         'store' => [

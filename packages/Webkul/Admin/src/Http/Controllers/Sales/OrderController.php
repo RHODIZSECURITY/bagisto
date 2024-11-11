@@ -16,7 +16,9 @@ use Webkul\Customer\Repositories\CustomerGroupRepository;
 use Webkul\Payment\Facades\Payment;
 use Webkul\Sales\Repositories\OrderCommentRepository;
 use Webkul\Sales\Repositories\OrderRepository;
+use Webkul\Sales\Repositories\InvoiceRepository;
 use Webkul\Sales\Transformers\OrderResource;
+use Webkul\Sales\Transformers\OrderResource2;
 
 class OrderController extends Controller
 {
@@ -30,6 +32,7 @@ class OrderController extends Controller
         protected OrderCommentRepository $orderCommentRepository,
         protected CartRepository $cartRepository,
         protected CustomerGroupRepository $customerGroupRepository,
+        protected InvoiceRepository $invoiceRepository
     ) {}
 
     /**
@@ -66,6 +69,26 @@ class OrderController extends Controller
         $cart = new CartResource($cart);
 
         return view('admin::sales.orders.create', compact('cart', 'addresses'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create2(int $cartId)
+    {
+        $cart = $this->cartRepository->find($cartId);
+
+        if (! $cart) {
+            return redirect()->route('admin.sales.orders.index');
+        }
+
+        $addresses = AddressResource::collection($cart->customer->addresses);
+
+        $cart = new CartResource($cart);
+
+        return view('admin::sales.orders.create2', compact('cart', 'addresses'));
     }
 
     /**
@@ -106,6 +129,49 @@ class OrderController extends Controller
         $order = $this->orderRepository->create($data);
 
         Cart::removeCart($cart);
+
+        session()->flash('order', trans('admin::app.sales.orders.create.order-placed-success'));
+
+        return new JsonResource([
+            'redirect'     => true,
+            'redirect_url' => route('admin.sales.orders.view', $order->id),
+        ]);
+    }
+
+     /**
+     * Store order
+     */
+    public function store2(int $cartId)
+    {
+        $cart = $this->cartRepository->findOrFail($cartId);
+
+        Cart::setCart($cart);
+
+        Cart::collectTotals();
+
+        $cart = Cart::getCart();
+
+        $data = (new OrderResource2($cart))->jsonSerialize();
+
+        $order = $this->orderRepository->create($data);
+
+        Cart::removeCart($cart);
+
+        //Crear factura
+        $orderItems = [];
+        foreach ($order->items as $item) {
+            $orderItems[$item->id] = $item->qty_ordered;
+        }
+
+        $data = [
+            "invoice" => [
+                "items" => $orderItems
+            ],
+            "can_create_transaction" => "1",
+            'order_id' => $order->id,
+        ];
+
+        $this->invoiceRepository->create($data);
 
         session()->flash('order', trans('admin::app.sales.orders.create.order-placed-success'));
 

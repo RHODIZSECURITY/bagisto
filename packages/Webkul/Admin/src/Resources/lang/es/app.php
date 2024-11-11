@@ -130,6 +130,7 @@ return [
         'orders' => [
             'index' => [
                 'create-btn' => 'Crear Pedido',
+                'create-btn2'=> 'Crear Pedido de Cliente',
                 'title'      => 'Órdenes',
 
                 'search-customer' => [
@@ -1453,6 +1454,7 @@ return [
                 'address-delete-confirmation' => '¿Estás seguro de que deseas eliminar esta dirección?',
                 'back-btn'                    => 'Volver',
                 'create-order'                => 'Crear Pedido',
+                'create-order2'               => 'Crear Pedido de cliente',
                 'customer'                    => 'Cliente',
                 'date-of-birth'               => 'DOB - :dob',
                 'default-address'             => 'Dirección predeterminada',

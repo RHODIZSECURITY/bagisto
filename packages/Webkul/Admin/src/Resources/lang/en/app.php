@@ -130,6 +130,7 @@ return [
         'orders' => [
             'index' => [
                 'create-btn' => 'Create Order',
+                'create-btn2'=> 'Create Store Order',
                 'title'      => 'Orders',
 
                 'search-customer' => [
@@ -1453,6 +1454,7 @@ return [
                 'address-delete-confirmation' => 'Are you sure you want to delete this address?',
                 'back-btn'                    => 'Back',
                 'create-order'                => 'Create Order',
+                'create-order2'               => 'Create Store Order',
                 'customer'                    => 'Customer',
                 'date-of-birth'               => 'DOB - :dob',
                 'default-address'             => 'Default Address',

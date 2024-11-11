@@ -19,6 +19,7 @@ Route::prefix('sales')->group(function () {
         Route::get('', 'index')->name('admin.sales.invoices.index');
 
         Route::post('create/{order_id}', 'store')->name('admin.sales.invoices.store');
+        Route::post('create2/{order_id}', 'store2')->name('admin.sales.invoices.store2');
 
         Route::get('view/{id}', 'view')->name('admin.sales.invoices.view');
 
@@ -34,8 +35,10 @@ Route::prefix('sales')->group(function () {
         Route::get('', 'index')->name('admin.sales.orders.index');
 
         Route::get('create/{cartId}', 'create')->name('admin.sales.orders.create');
+        Route::get('create2/{cartId}', 'create2')->name('admin.sales.orders.create2');
 
         Route::post('create/{cartId}', 'store')->name('admin.sales.orders.store');
+        Route::post('create2/{cartId}', 'store2')->name('admin.sales.orders.store2');
 
         Route::get('view/{id}', 'view')->name('admin.sales.orders.view');
 
@@ -87,6 +90,7 @@ Route::prefix('sales')->group(function () {
         Route::get('{id}', 'index')->name('admin.sales.cart.index');
 
         Route::post('create', 'store')->name('admin.sales.cart.store');
+        Route::post('create2', 'store2')->name('admin.sales.cart.store2');
 
         Route::post('{id}/items', 'storeItem')->name('admin.sales.cart.items.store');
 

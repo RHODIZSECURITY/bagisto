@@ -15,12 +15,20 @@
             {!! view_render_event('bagisto.admin.sales.orders.create.before') !!}
 
             @if (bouncer()->hasPermission('sales.orders.create'))
+               <button
+                    class="primary-button"
+                    @click="$refs.selectCustomerComponent.createCart(false)"
+                >
+                    @lang('admin::app.sales.orders.index.create-btn')
+                </button>
+
                 <button
                     class="primary-button"
                     @click="$refs.selectCustomerComponent.openDrawer()"
                 >
-                    @lang('admin::app.sales.orders.index.create-btn')
+                    @lang('admin::app.sales.orders.index.create-btn2')
                 </button>
+
             @endif
 
             {!! view_render_event('bagisto.admin.sales.orders.create.after') !!}
@@ -322,6 +330,20 @@
                     },
 
                     createCart(customer) {
+
+                        if (customer==false) {
+                            //alert("crear orden tienda fisica");
+                            this.$axios.post("{{ route('admin.sales.cart.store2') }}")
+                                .then(function(response) {
+                                    window.location.href = response.data.redirect_url;
+                                })
+                                .catch(function (error) {
+                                    this.$emitter.emit('add-flash', { type: 'error', message: error.response.data.message });
+                                });
+                            return;
+                        }
+
+                        //alert("crear orden normal");
                         this.$axios.post("{{ route('admin.sales.cart.store') }}", {customer_id: customer.id})
                             .then(function(response) {
                                 window.location.href = response.data.redirect_url;

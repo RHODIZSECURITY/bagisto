@@ -72,6 +72,32 @@ class CartController extends Controller
         }
     }
 
+     /**
+     * Create cart
+     */
+    public function store2(): JsonResource
+    {
+        $customerId =  core()->getConfigData('rhodiz_config.config.general.new_order_customer_id');   
+
+        $customer = $this->customerRepository->findOrFail( $customerId );
+
+        try {
+            $cart = Cart::createCart([
+                'customer'  => $customer,
+                'is_active' => false,
+            ]);
+
+            return new JsonResource([
+                'data'         => new CartResource($cart),
+                'redirect_url' => route('admin.sales.orders.create2', $cart->id),
+            ]);
+        } catch (\Exception $exception) {
+            return new JsonResource([
+                'message' => $exception->getMessage(),
+            ]);
+        }
+    }
+
     /**
      * Store items in cart.
      */

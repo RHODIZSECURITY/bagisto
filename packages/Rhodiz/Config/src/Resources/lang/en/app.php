@@ -16,6 +16,7 @@ return [
             'status'              => 'Status',
             'name'                => 'Business Name',
             'web'                 => 'Web url',
+            'new_order_customer_id'   => 'Customer ID used to create store orders',
             'display-products'    => 'Display Products',
         ],
         'store' => [
