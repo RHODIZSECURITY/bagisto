@@ -28,26 +28,26 @@
     <br/>
     <br/>
 
-    <div style="padding-bottom: 40px;border-bottom: 1px solid #CBD5E1;">
+    <div style="padding-bottom: 20px;border-bottom: 1px solid #CBD5E1;">
         <table style="overflow-x: auto; border-collapse: collapse;
         border-spacing: 0;width: 100%">
             <thead>
                 <tr style="color: #121A26;border-top: 1px solid #CBD5E1;border-bottom: 1px solid #CBD5E1;">
-                    <th style="text-align: left;padding: 15px">@lang('admin::app.emails.orders.sku')</th>
-                    <th style="text-align: left;padding: 15px">@lang('admin::app.emails.orders.name')</th>
-                    <th style="text-align: left;padding: 15px">@lang('admin::app.emails.orders.price')</th>
-                    <th style="text-align: left;padding: 15px">@lang('admin::app.emails.orders.qty')</th>
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.sku')</th>
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.name')</th>
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.price')</th>
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.qty')</th>
                 </tr>
             </thead>
 
             <tbody style="font-size: 16px;font-weight: 400;color: #384860;">
                 @foreach ($shipment->items as $item)
                     <tr style="vertical-align: text-top;">
-                        <td style="text-align: left;padding: 15px">
+                        <td style="text-align: left;padding: 5px">
                             {{ $item->sku }}
                         </td>
 
-                        <td style="text-align: left;padding: 15px">
+                        <td style="text-align: left;padding: 5px">
                             {{ $item->name }}
 
                             @if (isset($item->additional['attributes']))
@@ -59,13 +59,13 @@
                             @endif
                         </td>
 
-                        <td style="display: flex;flex-direction: column;text-align: left;padding: 15px">
+                        <td style="display: flex;flex-direction: column;text-align: left;padding: 5px">
                             @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
                                 {{ core()->formatBasePrice($item->base_price_incl_tax) }}
                             @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
                                 {{ core()->formatBasePrice($item->base_price_incl_tax) }}
 
-                                <span style="font-size: 12px; white-space: nowrap">
+                                <span style="font-size: 12px;">
                                     @lang('admin::app.emails.orders.excl-tax')
 
                                     <span style="font-weight: 600">
@@ -77,7 +77,7 @@
                             @endif
                         </td>
 
-                        <td style="text-align: left;padding: 15px">
+                        <td style="text-align: left;padding: 5px">
                             {{ $item->qty }}
                         </td>
                     </tr>
