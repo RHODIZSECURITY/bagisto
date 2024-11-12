@@ -240,7 +240,6 @@ return [
         Webkul\Suggestion\Providers\SuggestionServiceProvider::class,
         Webkul\ImageZoom\Providers\ImageZoomServiceProvider::class,
         Rhodiz\Stripe\Providers\StripeServiceProvider::class,
-        //Rhodiz\Usps\Providers\UspsServiceProvider::class,
         Rhodiz\UspsFlat\Providers\UspsFlatServiceProvider::class,
         Rhodiz\Config\Providers\ConfigServiceProvider::class
     ])->toArray(),
