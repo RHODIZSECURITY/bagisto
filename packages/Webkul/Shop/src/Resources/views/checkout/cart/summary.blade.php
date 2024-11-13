@@ -91,61 +91,10 @@
 
         <!-- Apply Coupon -->
         {!! view_render_event('bagisto.shop.checkout.cart.summary.coupon.before') !!}
-        
+
         @include('shop::checkout.coupon')
 
         {!! view_render_event('bagisto.shop.checkout.cart.summary.coupon.after') !!}
-
-        <!-- Shipping Rates -->
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.before') !!}
-        
-        <template v-if="displayTax.shipping == 'including_tax'">
-            <div class="flex justify-between text-right">
-                <p class="text-base max-sm:text-sm">
-                    @lang('shop::app.checkout.cart.summary.delivery-charges')
-                </p>
-
-                <p class="text-base font-medium max-sm:text-sm">
-                    @{{ cart.formatted_shipping_amount_incl_tax }}
-                </p>
-            </div>
-        </template>
-
-        <template v-else-if="displayTax.shipping == 'both'">
-            <div class="flex justify-between text-right">
-                <p class="text-base max-sm:text-sm">
-                    @lang('shop::app.checkout.cart.summary.delivery-charges-excl-tax')
-                </p>
-
-                <p class="text-base font-medium max-sm:text-sm">
-                    @{{ cart.formatted_shipping_amount }}
-                </p>
-            </div>
-            
-            <div class="flex justify-between text-right">
-                <p class="text-base max-sm:text-sm">
-                    @lang('shop::app.checkout.cart.summary.delivery-charges-incl-tax')
-                </p>
-
-                <p class="text-base font-medium max-sm:text-sm">
-                    @{{ cart.formatted_shipping_amount_incl_tax }}
-                </p>
-            </div>
-        </template>
-
-        <template v-else>
-            <div class="flex justify-between text-right">
-                <p class="text-base max-sm:text-sm">
-                    @lang('shop::app.checkout.cart.summary.delivery-charges')
-                </p>
-
-                <p class="text-base font-medium max-sm:text-sm">
-                    @{{ cart.formatted_shipping_amount }}
-                </p>
-            </div>
-        </template>
-
-        {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.after') !!}
 
         <!-- Taxes -->
         {!! view_render_event('bagisto.shop.checkout.cart.summary.tax.before') !!}
@@ -205,7 +154,59 @@
         </div>
 
         {!! view_render_event('bagisto.shop.checkout.cart.summary.tax.after') !!}
-   
+
+        <!-- Shipping Rates -->
+        {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.before') !!}
+
+        <template v-if="displayTax.shipping == 'including_tax'">
+            <div class="flex justify-between text-right">
+                <p class="text-base max-sm:text-sm">
+                    @lang('shop::app.checkout.cart.summary.delivery-charges')
+                </p>
+
+                <p class="text-base font-medium max-sm:text-sm">
+                    @{{ cart.formatted_shipping_amount_incl_tax }}
+                </p>
+            </div>
+        </template>
+
+        <template v-else-if="displayTax.shipping == 'both'">
+            <div class="flex justify-between text-right">
+                <p class="text-base max-sm:text-sm">
+                    @lang('shop::app.checkout.cart.summary.delivery-charges-excl-tax')
+                </p>
+
+                <p class="text-base font-medium max-sm:text-sm">
+                    @{{ cart.formatted_shipping_amount }}
+                </p>
+            </div>
+
+            <div class="flex justify-between text-right">
+                <p class="text-base max-sm:text-sm">
+                    @lang('shop::app.checkout.cart.summary.delivery-charges-incl-tax')
+                </p>
+
+                <p class="text-base font-medium max-sm:text-sm">
+                    @{{ cart.formatted_shipping_amount_incl_tax }}
+                </p>
+            </div>
+        </template>
+
+        <template v-else>
+            <div class="flex justify-between text-right">
+                <p class="text-base max-sm:text-sm">
+                    @lang('shop::app.checkout.cart.summary.delivery-charges')
+                </p>
+
+                <p class="text-base font-medium max-sm:text-sm">
+                    @{{ cart.formatted_shipping_amount }}
+                </p>
+            </div>
+        </template>
+
+        {!! view_render_event('bagisto.shop.checkout.onepage.summary.delivery_charges.after') !!}
+
+
         <!-- Cart Grand Total -->
         {!! view_render_event('bagisto.shop.checkout.cart.summary.grand_total.before') !!}
 
