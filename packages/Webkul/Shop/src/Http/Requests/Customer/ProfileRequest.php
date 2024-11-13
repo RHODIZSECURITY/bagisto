@@ -4,6 +4,7 @@ namespace Webkul\Shop\Http\Requests\Customer;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Webkul\Core\Rules\PhoneNumber;
+use Webkul\Core\Rules\DateBirthInTheLimits;
 
 class ProfileRequest extends FormRequest
 {
@@ -30,7 +31,7 @@ class ProfileRequest extends FormRequest
             'first_name'                => ['required'],
             'last_name'                 => ['required'],
             'gender'                    => 'required|in:Other,Male,Female',
-            'date_of_birth'             => 'date|before:today',
+            'date_of_birth'             => [new DateBirthInTheLimits],
             'email'                     => 'email|unique:customers,email,'.$id,
             'new_password'              => 'confirmed|min:6|required_with:current_password',
             'new_password_confirmation' => 'required_with:new_password',

@@ -30,4 +30,9 @@ return [
             'address'             => 'Direccion',
         ],
     ],
+    'validation' => [
+        'date_bad_format' => 'El formato de la fecha es incorrecto.',
+        'date_before_min' => 'La fecha de nacimiento debe ser una fecha posterior a :date_min.',
+        'date_after_max' =>  'El fecha de nacimiento debe ser anterior al dia de hoy.',
+    ],
 ];

@@ -56,9 +56,9 @@
                         disable: this.disable ?? [],
                         minDate: this.minDate ?? '',
                         maxDate: this.maxDate ?? '',
-                        altFormat: "Y-m-d",
-                        dateFormat: "Y-m-d",
-                        weekNumbers: true,
+                        altFormat: "{{config('app.only_date_format')}}",
+                        dateFormat: "{{config('app.only_date_format')}}",
+                        weekNumbers: false,
 
                         onChange: function(selectedDates, dateStr, instance) {
                             self.$emit("onChange", dateStr);

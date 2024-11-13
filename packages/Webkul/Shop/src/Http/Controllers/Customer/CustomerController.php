@@ -11,6 +11,7 @@ use Webkul\Product\Repositories\ProductReviewRepository;
 use Webkul\Sales\Models\Order;
 use Webkul\Shop\Http\Controllers\Controller;
 use Webkul\Shop\Http\Requests\Customer\ProfileRequest;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class CustomerController extends Controller
 {
@@ -34,6 +35,9 @@ class CustomerController extends Controller
     {
         $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
 
+        $newFormat = config('app.only_date_format');
+        $customer->date_of_birth = DateHelper::changeStringDateFomat($customer->date_of_birth, 'Y-m-d', $newFormat) ?? '';
+
         return view('shop::customers.account.profile.index', compact('customer'));
     }
 
@@ -45,6 +49,9 @@ class CustomerController extends Controller
     public function edit()
     {
         $customer = $this->customerRepository->find(auth()->guard('customer')->user()->id);
+
+        $newFormat = config('app.only_date_format');
+        $customer->date_of_birth = DateHelper::changeStringDateFomat($customer->date_of_birth, 'Y-m-d', $newFormat) ?? '';
 
         return view('shop::customers.account.profile.edit', compact('customer'));
     }
@@ -60,8 +67,20 @@ class CustomerController extends Controller
 
         $data = $profileRequest->validated();
 
-        if (empty($data['date_of_birth'])) {
-            unset($data['date_of_birth']);
+        if (isset($data['date_of_birth'])) {
+
+            if (empty($data['date_of_birth'])) {
+                unset($data['date_of_birth']);
+            } else {
+                //Cambiar formato o si no es compatible quitar el valor
+                $oldFormat = config('app.only_date_format');
+                $dob = DateHelper::changeStringDateFomat($data['date_of_birth'], $oldFormat, 'Y-m-d');
+                if($dob) {
+                    $data['date_of_birth'] = $dob;
+                } else {
+                    unset($data['date_of_birth']);
+                }
+            }
         }
 
         if (
