@@ -131,6 +131,16 @@
             </div>
         @endif
 
+        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <span style="text-align: left;">
+                @lang('shop::app.emails.orders.tax')
+            </span>
+
+            <span style="text-align: right;">
+                {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
+            </span>
+        </div>
+
         @if ($order->shipping_address)
             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
@@ -174,16 +184,6 @@
                 </div>
             @endif
         @endif
-
-        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-            <span style="text-align: left;">
-                @lang('shop::app.emails.orders.tax')
-            </span>
-
-            <span style="text-align: right;">
-                {{ core()->formatPrice($order->tax_amount, $order->order_currency_code) }}
-            </span>
-        </div>
 
         @if ($order->discount_amount > 0)
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">

@@ -126,6 +126,16 @@
             </div>
         @endif
 
+        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <span style="text-align: left;">
+                @lang('admin::app.emails.orders.tax')
+            </span>
+
+            <span style="text-align: right;">
+                {{ core()->formatBasePrice($refund->base_tax_amount) }}
+            </span>
+        </div>
+
         @if ($refund->order->shipping_address)
             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
@@ -169,16 +179,6 @@
                 </div>
             @endif
         @endif
-
-        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-            <span style="text-align: left;">
-                @lang('admin::app.emails.orders.tax')
-            </span>
-
-            <span style="text-align: right;">
-                {{ core()->formatBasePrice($refund->base_tax_amount) }}
-            </span>
-        </div>
 
         @if ($refund->discount_amount > 0)
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
