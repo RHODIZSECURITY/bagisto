@@ -33,11 +33,10 @@
         border-spacing: 0;width: 100%">
             <thead>
                 <tr style="color: #121A26;border-top: 1px solid #CBD5E1;border-bottom: 1px solid #CBD5E1;">
-                    @foreach (['sku', 'name', 'price', 'qty'] as $item)
-                        <th style="text-align: left;padding: 5px">
-                            @lang('shop::app.emails.orders.' .$item)
-                        </th>
-                    @endforeach
+                    <th style="text-align: left;padding: 5px">@lang('shop::app.emails.orders.sku')</th>
+                    <th style="text-align: left;padding: 5px">@lang('shop::app.emails.orders.name')</th>
+                    <th style="text-align: right;padding: 5px">@lang('shop::app.emails.orders.price')</th>
+                    <th style="text-align: right;padding: 5px">@lang('shop::app.emails.orders.qty')</th>
                 </tr>
             </thead>
 
@@ -62,7 +61,7 @@
                             @endif
                         </td>
 
-                        <td style="display: flex;flex-direction: column;text-align: left;padding: 5px">
+                        <td style="display: flex;flex-direction: column;text-align: right;padding: 5px">
                             @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
                                 {{ core()->formatPrice($item->price_incl_tax, $invoice->order_currency_code) }}
                             @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
@@ -80,7 +79,7 @@
                             @endif
                         </td>
 
-                        <td style="text-align: left;padding: 5px">
+                        <td style="text-align: right;padding: 5px">
                             {{ $item->qty }}
                         </td>
                     </tr>
@@ -93,7 +92,7 @@
 
         @if (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'including_tax')
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
+                <span style="text-align: left;">
                     @lang('shop::app.emails.orders.subtotal')
                 </span>
 
@@ -103,7 +102,7 @@
             </div>
         @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
+                <span style="text-align: left;">
                     @lang('shop::app.emails.orders.subtotal-excl-tax')
                 </span>
 
@@ -113,7 +112,7 @@
             </div>
 
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
+                <span style="text-align: left;">
                     @lang('shop::app.emails.orders.subtotal-incl-tax')
                 </span>
 
@@ -123,7 +122,7 @@
             </div>
         @else
             <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
+                <span style="text-align: left;">
                     @lang('shop::app.emails.orders.subtotal')
                 </span>
 
@@ -136,7 +135,7 @@
         @if ($invoice->order->shipping_address)
             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
+                    <span style="text-align: left;">
                         @lang('shop::app.emails.orders.shipping-handling')
                     </span>
 
@@ -146,7 +145,7 @@
                 </div>
             @elseif (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'both')
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
+                    <span style="text-align: left;">
                         @lang('shop::app.emails.orders.shipping-handling-excl-tax')
                     </span>
 
@@ -156,7 +155,7 @@
                 </div>
 
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
+                    <span style="text-align: left;">
                         @lang('shop::app.emails.orders.shipping-handling-incl-tax')
                     </span>
 
@@ -166,7 +165,7 @@
                 </div>
             @else
                 <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                    <span>
+                    <span style="text-align: left;">
                         @lang('shop::app.emails.orders.shipping-handling')
                     </span>
 
@@ -177,8 +176,8 @@
             @endif
         @endif
 
-        <div style="display: grid;gap: 100px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-            <span>
+        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <span style="text-align: left;">
                 @lang('shop::app.emails.orders.tax')
             </span>
 
@@ -188,8 +187,8 @@
         </div>
 
         @if ($invoice->discount_amount > 0)
-            <div style="display: grid;gap: 100px;grid-template-columns: repeat(2, minmax(0, 1fr));">
-                <span>
+            <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));">
+                <span style="text-align: left;">
                     @lang('shop::app.emails.orders.discount')
                 </span>
 
@@ -199,8 +198,8 @@
             </div>
         @endif
 
-        <div style="display: grid;gap: 100px;grid-template-columns: repeat(2, minmax(0, 1fr));font-weight: bold">
-            <span>
+        <div style="display: grid;gap: 20px;grid-template-columns: repeat(2, minmax(0, 1fr));font-weight: bold">
+            <span style="text-align: left;">
                 @lang('shop::app.emails.orders.grand-total')
             </span>
 

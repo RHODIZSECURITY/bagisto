@@ -35,8 +35,8 @@
                 <tr style="color: #121A26;border-top: 1px solid #CBD5E1;border-bottom: 1px solid #CBD5E1;">
                     <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.sku')</th>
                     <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.name')</th>
-                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.price')</th>
-                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.qty')</th>
+                    <th style="text-align: right;padding: 5px">@lang('admin::app.emails.orders.price')</th>
+                    <th style="text-align: right;padding: 5px">@lang('admin::app.emails.orders.qty')</th>
                 </tr>
             </thead>
 
@@ -59,7 +59,7 @@
                             @endif
                         </td>
 
-                        <td style="display: flex;flex-direction: column;text-align: left;padding: 5px">
+                        <td style="display: flex;flex-direction: column;text-align: right;padding: 5px">
                             @if (core()->getConfigData('sales.taxes.sales.display_prices') == 'including_tax')
                                 {{ core()->formatBasePrice($item->base_price_incl_tax) }}
                             @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
@@ -77,7 +77,7 @@
                             @endif
                         </td>
 
-                        <td style="text-align: left;padding: 5px">
+                        <td style="text-align: right;padding: 5px">
                             {{ $item->qty }}
                         </td>
                     </tr>
