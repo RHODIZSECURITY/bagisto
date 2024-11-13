@@ -93,8 +93,8 @@
                     <div class="max-md:hidden">
                         <div class="text-base font-medium">
                             @lang('shop::app.customers.account.orders.view.information.placed-on')
-    
-                            {{ core()->formatDate($order->created_at, 'd M Y') }}
+
+                            {{ core()->formatDate($order->created_at, 'M d, Y') }}
                         </div>
 
                         <div class="relative mt-8 overflow-x-auto rounded-xl border">
@@ -357,11 +357,11 @@
 
                                     <p class="text-black">#{{ $order->increment_id }}</p>
                                 </div>
-    
+
                                 <div>
                                     @lang('shop::app.customers.account.orders.view.information.placed-on'):
 
-                                    <p class="text-black">{{ core()->formatDate($order->created_at, 'd M Y') }}</p>
+                                    <p class="text-black">{{ core()->formatDate($order->created_at, 'm/d/Y') }}</p>
                                 </div>
 
                                 <div class="items-center">

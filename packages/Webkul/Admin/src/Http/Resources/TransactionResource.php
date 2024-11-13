@@ -22,7 +22,7 @@ class TransactionResource extends JsonResource
             'amount'          => core()->formatPrice($this->amount),
             'invoice_id'      => $this->invoice_id,
             'status'          => $this->status,
-            'created_at'      => $this->created_at->format('d M Y'),
+            'created_at'      => $this->created_at->format('M d, Y'),
         ];
     }
 }

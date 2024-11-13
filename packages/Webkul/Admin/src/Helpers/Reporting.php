@@ -981,8 +981,8 @@ class Reporting
     public function getDateRange(): array
     {
         return [
-            'previous' => $this->saleReporting->getLastStartDate()->format('d M Y').' - '.$this->saleReporting->getLastEndDate()->format('d M Y'),
-            'current'  => $this->saleReporting->getStartDate()->format('d M Y').' - '.$this->saleReporting->getEndDate()->format('d M Y'),
+            'previous' => $this->saleReporting->getLastStartDate()->format('M d, Y').' - '.$this->saleReporting->getLastEndDate()->format('M d, Y'),
+            'current'  => $this->saleReporting->getStartDate()->format('M d, Y').' - '.$this->saleReporting->getEndDate()->format('M d, Y'),
         ];
     }
 

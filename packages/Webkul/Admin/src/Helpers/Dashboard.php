@@ -62,7 +62,7 @@ class Dashboard
                 'customer_name'              => $order->customer_full_name,
                 'items'                      => view('admin::sales.orders.items', compact('order'))->render(),
                 'billing_address'            => $order?->billing_address->city.($order?->billing_address->country ? ', '.core()->country_name($order?->billing_address->country) : ''),
-                'created_at'                 => $order->created_at->format('d M Y, H:i:s'),
+                'created_at'                 => $order->created_at->format('M d, Y h:i:s A'),
             ];
         });
 

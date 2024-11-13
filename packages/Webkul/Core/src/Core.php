@@ -640,7 +640,7 @@ class Core
      * @param  string  $format
      * @return string
      */
-    public function formatDate($date = null, $format = 'd-m-Y H:i:s')
+    public function formatDate($date = null, $format = 'm/d/Y h:i A')
     {
         $channel = $this->getCurrentChannel();
 

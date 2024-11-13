@@ -367,7 +367,7 @@
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300">
-                                {{ core()->formatDate($order->created_at, 'Y-m-d H:i:s') }}
+                                {{ core()->formatDate($order->created_at, 'm/d/Y h:i:s A') }}
                             </p>
 
                             <p class="text-gray-600 dark:text-gray-300">

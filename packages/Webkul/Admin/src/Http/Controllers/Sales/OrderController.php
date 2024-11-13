@@ -279,7 +279,7 @@ class OrderController extends Controller
         })->paginate(10);
 
         foreach ($orders as $key => $order) {
-            $orders[$key]['formatted_created_at'] = core()->formatDate($order->created_at, 'd M Y');
+            $orders[$key]['formatted_created_at'] = core()->formatDate($order->created_at, 'M d, Y');
 
             $orders[$key]['status_label'] = $order->status_label;
 

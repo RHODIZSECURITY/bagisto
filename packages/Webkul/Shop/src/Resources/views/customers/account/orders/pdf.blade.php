@@ -264,7 +264,7 @@
                                 </b>
 
                                 <span>
-                                    {{ core()->formatDate($invoice->created_at, 'd-m-Y') }}
+                                    {{ core()->formatDate($invoice->created_at, 'm/d/Y') }}
                                 </span>
                             </td>
 
@@ -274,13 +274,13 @@
                                 </b>
 
                                 <span>
-                                    {{ core()->formatDate($invoice->order->created_at, 'd-m-Y') }}
+                                    {{ core()->formatDate($invoice->order->created_at, 'm/d/Y') }}
                                 </span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                
+
                 <!-- Invoice Information -->
                 <table class="{{ core()->getCurrentLocale()->direction }}">
                     <tbody>

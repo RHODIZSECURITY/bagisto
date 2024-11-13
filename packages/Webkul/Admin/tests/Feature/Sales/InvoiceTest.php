@@ -1526,7 +1526,7 @@ it('should print/download the invoice', function () {
         'amount'         => $invoice->grand_total,
     ]);
 
-    $fileName = 'invoice-'.$invoice->created_at->format('d-m-Y').'.pdf';
+    $fileName = 'invoice-'.$invoice->created_at->format('m-d-Y').'.pdf';
 
     // Act and Assert.
     $this->loginAsAdmin();
