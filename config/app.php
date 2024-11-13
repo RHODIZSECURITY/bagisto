@@ -268,4 +268,17 @@ return [
         'ProductVideo' => Webkul\Product\Facades\ProductVideo::class,
         'Redis'        => Illuminate\Support\Facades\Redis::class,
     ])->toArray(),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application datetime format
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default datetime format for your application, which
+    | will be used by the PHP date and date-time functions. We have gone
+    | ahead and set this to a sensible default for you out of the box.
+    |
+    */
+    'date_format' => 'm/d/Y h:i:s A',
+    'only_date_format' => 'm/d/Y',
 ];
