@@ -431,8 +431,8 @@
                                     let state = response.data.data.state;
 
                                     //Si los parametros son identicos no muestro nada al cliente
-                                    if (params['address'].toLowerCase()==address && params['city'].toLowerCase()==city &&
-                                        params['postcode'].toLowerCase()==postcode && params['state'].toLowerCase()==state) {
+                                    if (params['address']==address && params['city']==city &&
+                                        params['postcode']==postcode && params['state']==state) {
                                         formulario.submit();
                                         return;
                                     }
