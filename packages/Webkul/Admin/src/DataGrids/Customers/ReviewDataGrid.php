@@ -4,6 +4,7 @@ namespace Webkul\Admin\DataGrids\Customers;
 
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class ReviewDataGrid extends DataGrid
 {
@@ -47,7 +48,7 @@ class ReviewDataGrid extends DataGrid
                 'product_flat.name as product_name',
                 'product_reviews.status as product_review_status',
                 'product_reviews.rating',
-                'product_reviews.created_at',
+                 DateHelper::formatDateRaw('product_reviews.created_at')
             )
             ->where('channel', core()->getCurrentChannelCode())
             ->where('locale', app()->getLocale());

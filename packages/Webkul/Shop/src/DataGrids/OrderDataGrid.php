@@ -5,6 +5,7 @@ namespace Webkul\Shop\DataGrids;
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
 use Webkul\Sales\Models\Order;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderDataGrid extends DataGrid
 {
@@ -20,7 +21,7 @@ class OrderDataGrid extends DataGrid
                 'orders.id',
                 'orders.increment_id',
                 'orders.status',
-                'orders.created_at',
+                DateHelper::formatDateRaw('orders.created_at'),
                 'orders.grand_total',
                 'orders.order_currency_code'
             )

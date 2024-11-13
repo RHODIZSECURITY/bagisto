@@ -5,6 +5,7 @@ namespace Webkul\Admin\DataGrids\Sales;
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
 use Webkul\Sales\Models\OrderAddress;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderRefundDataGrid extends DataGrid
 {
@@ -26,7 +27,7 @@ class OrderRefundDataGrid extends DataGrid
                 'orders.increment_id',
                 'refunds.state',
                 'refunds.base_grand_total',
-                'refunds.created_at'
+                DateHelper::formatDateRaw('refunds.created_at')
             )
             ->addSelect(DB::raw('CONCAT('.DB::getTablePrefix().'order_address_billing.first_name, " ", '.DB::getTablePrefix().'order_address_billing.last_name) as billed_to'));
 

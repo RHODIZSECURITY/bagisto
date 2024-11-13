@@ -7,6 +7,7 @@ use Webkul\DataGrid\DataGrid;
 use Webkul\Sales\Models\Order;
 use Webkul\Sales\Models\OrderAddress;
 use Webkul\Sales\Repositories\OrderRepository;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderDataGrid extends DataGrid
 {
@@ -33,7 +34,7 @@ class OrderDataGrid extends DataGrid
                 'order_payment.method',
                 'orders.increment_id',
                 'orders.base_grand_total',
-                'orders.created_at',
+                DateHelper::formatDateRaw('orders.created_at'),
                 'channel_name',
                 'channel_id',
                 'status',

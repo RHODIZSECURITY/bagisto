@@ -4,6 +4,7 @@ namespace Webkul\Admin\DataGrids\Sales;
 
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderTransactionDataGrid extends DataGrid
 {
@@ -36,7 +37,7 @@ class OrderTransactionDataGrid extends DataGrid
                 'order_transactions.transaction_id as transaction_id',
                 'order_transactions.invoice_id as invoice_id',
                 'orders.increment_id as order_id',
-                'order_transactions.created_at as created_at',
+                DateHelper::formatDateRaw('order_transactions.created_at'),
                 'order_transactions.amount as amount',
                 'order_transactions.status as status'
             );

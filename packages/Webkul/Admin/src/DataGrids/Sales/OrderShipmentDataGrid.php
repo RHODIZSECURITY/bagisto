@@ -5,6 +5,7 @@ namespace Webkul\Admin\DataGrids\Sales;
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
 use Webkul\Sales\Models\OrderAddress;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderShipmentDataGrid extends DataGrid
 {
@@ -33,8 +34,8 @@ class OrderShipmentDataGrid extends DataGrid
                 'shipments.id as shipment_id',
                 'orders.increment_id as shipment_order_id',
                 'shipments.total_qty as shipment_total_qty',
-                'orders.created_at as order_date',
-                'shipments.created_at as shipment_created_at'
+                DateHelper::formatDateRaw('orders.created_at', 'order_date'),
+                DateHelper::formatDateRaw('shipments.created_at', 'shipment_created_at'),
             )
             ->addSelect(DB::raw('CONCAT('.DB::getTablePrefix().'order_address_shipping.first_name, " ", '.DB::getTablePrefix().'order_address_shipping.last_name) as shipped_to'))
             ->selectRaw('IF('.DB::getTablePrefix().'shipments.inventory_source_id IS NOT NULL,'.DB::getTablePrefix().'inventory_sources.name, '.DB::getTablePrefix().'shipments.inventory_source_name) as inventory_source_name');

@@ -4,6 +4,7 @@ namespace Webkul\Admin\DataGrids\Sales;
 
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderInvoiceDataGrid extends DataGrid
 {
@@ -23,7 +24,7 @@ class OrderInvoiceDataGrid extends DataGrid
                 'orders.increment_id as order_id',
                 'invoices.state as state',
                 'invoices.base_grand_total as base_grand_total',
-                'invoices.created_at as created_at'
+                DateHelper::formatDateRaw('invoices.created_at')
             )
             ->selectRaw("CASE WHEN {$dbPrefix}invoices.increment_id IS NOT NULL THEN {$dbPrefix}invoices.increment_id ELSE {$dbPrefix}invoices.id END AS increment_id");
 

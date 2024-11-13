@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
 use Webkul\Sales\Models\Order;
 use Webkul\Sales\Models\OrderAddress;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class OrderDataGrid extends DataGrid
 {
@@ -29,7 +30,7 @@ class OrderDataGrid extends DataGrid
                 'orders.increment_id',
                 'order_payment.method',
                 'orders.base_grand_total',
-                'orders.created_at',
+                DateHelper::formatDateRaw('orders.created_at'),
                 'channel_name',
                 'status',
                 'order_address_billing.email as customer_email',

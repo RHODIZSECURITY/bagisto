@@ -4,6 +4,7 @@ namespace Webkul\Admin\DataGrids\Marketing\Promotions;
 
 use Illuminate\Support\Facades\DB;
 use Webkul\DataGrid\DataGrid;
+use Rhodiz\Config\Helpers\DateHelper;
 
 class CartRuleCouponDataGrid extends DataGrid
 {
@@ -18,7 +19,7 @@ class CartRuleCouponDataGrid extends DataGrid
             ->select(
                 'id',
                 'code',
-                'created_at',
+                DateHelper::formatDateRaw('created_at', 'created_at'),
                 'expired_at',
                 'times_used'
             )
