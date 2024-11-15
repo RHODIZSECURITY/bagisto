@@ -33,11 +33,10 @@
         border-spacing: 0;width: 100%">
             <thead>
                 <tr style="color: #121A26;border-top: 1px solid #CBD5E1;border-bottom: 1px solid #CBD5E1;">
-                    @foreach (['sku', 'name', 'price', 'qty'] as $item)
-                        <th style="text-align: left;padding: 5px">
-                            @lang('admin::app.emails.orders.' . $item)
-                        </th>
-                    @endforeach
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.sku')</th>
+                    <th style="text-align: left;padding: 5px">@lang('admin::app.emails.orders.name')</th>
+                    <th style="text-align: right;padding: 5px">@lang('admin::app.emails.orders.price')</th>
+                    <th style="text-align: right;padding: 5px">@lang('admin::app.emails.orders.qty')</th>
                 </tr>
             </thead>
 
