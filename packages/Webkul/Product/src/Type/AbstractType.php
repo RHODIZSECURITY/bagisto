@@ -1071,9 +1071,12 @@ abstract class AbstractType
 
     public function increment($value)
     {
-        $incrementPercent = ($value*2.9)/100;
+        $stripe_increment_percent = config('app.stripe_increment_percent', '2.9');
+        $stripe_increment_fixed = config('app.stripe_increment_fixed', '0.30');
 
-        $incrementFixed = 0.30;
+        $incrementPercent = ($value*$stripe_increment_percent)/100;
+
+        $incrementFixed = $stripe_increment_fixed;
 
         return $value + $incrementPercent + $incrementFixed;
     }
