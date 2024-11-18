@@ -171,12 +171,9 @@
 
             <!-- DOB -->
             <x-shop::form.control-group>
-                <x-shop::form.control-group.label>
-                    @lang('shop::app.customers.account.profile.edit.dob')
-                </x-shop::form.control-group.label>
 
                 <x-shop::form.control-group.control
-                    type="date"
+                    type="hidden"
                     name="date_of_birth"
                     :value="old('date_of_birth') ?? $customer->date_of_birth"
                     :label="trans('shop::app.customers.account.profile.edit.dob')"
