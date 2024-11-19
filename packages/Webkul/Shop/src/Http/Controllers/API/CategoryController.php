@@ -43,6 +43,30 @@ class CategoryController extends APIController
     }
 
     /**
+     * Get all categories in Vaqueras Site Format.
+     */
+    public function index2(): JsonResource
+    {
+        /**
+         * These are the default parameters. By default, only the enabled category
+         * will be shown in the current locale.
+         */
+        $defaultParams = [
+            'status' => 1,
+            'locale' => app()->getLocale(),
+            'only_children' => 1,
+        ];
+
+        $paramArray = request()->all();
+
+        //if ( isset($paramArray['parent_id']) ) unset($paramArray['parent_id']);
+
+        $categories = $this->categoryRepository->getCategoriesVaqueras(array_merge($defaultParams, $paramArray));
+
+        return CategoryResource::collection($categories);
+    }
+
+    /**
      * Get all categories in tree format.
      */
     public function tree(): JsonResource

@@ -22,6 +22,8 @@ Route::group(['middleware' => ['locale', 'theme', 'currency'], 'prefix' => 'api'
     Route::controller(CategoryController::class)->prefix('categories')->group(function () {
         Route::get('', 'index')->name('shop.api.categories.index');
 
+        Route::get('', 'index2')->name('shop.api.categories.index2');
+
         Route::get('tree', 'tree')->name('shop.api.categories.tree');
 
         Route::get('attributes', 'getAttributes')->name('shop.api.categories.attributes');

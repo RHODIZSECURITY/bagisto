@@ -64,6 +64,51 @@ class CategoryRepository extends Repository
     }
 
     /**
+     * Get categories in carrusel.
+     *
+     * @return void
+     */
+    public function getCategoriesVaqueras(array $params = [])
+    {
+        $queryBuilder = $this->query()
+            ->select('categories.*')
+            ->leftJoin('category_translations', 'category_translations.category_id', '=', 'categories.id')
+            ->whereNotNull('categories.parent_id');
+
+        foreach ($params as $key => $value) {
+            switch ($key) {
+                case 'name':
+                    $queryBuilder->where('category_translations.name', 'like', '%'.urldecode($value).'%');
+
+                    break;
+                case 'description':
+                    $queryBuilder->where('category_translations.description', 'like', '%'.urldecode($value).'%');
+
+                    break;
+                case 'status':
+                    $queryBuilder->where('categories.status', $value);
+
+                    break;
+                case 'only_children':
+                    $queryBuilder->whereNotNull('categories.parent_id');
+
+                    break;
+                /*case 'parent_id':
+                    $queryBuilder->where('categories.parent_id', $value);
+
+                    break;*/
+
+                case 'locale':
+                    $queryBuilder->where('category_translations.locale', $value);
+
+                    break;
+            }
+        }
+
+        return $queryBuilder->paginate($params['limit'] ?? 10);
+    }
+
+    /**
      * Create category.
      *
      * @return \Webkul\Category\Contracts\Category
