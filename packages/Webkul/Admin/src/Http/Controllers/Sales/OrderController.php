@@ -171,7 +171,8 @@ class OrderController extends Controller
             'order_id' => $order->id,
         ];
 
-        $this->invoiceRepository->create($data);
+        //La factura se va a generar como Pagada y el estado de la orden va a ser Completada
+        $this->invoiceRepository->create($data, 'paid', 'completed');
 
         session()->flash('order', trans('admin::app.sales.orders.create.order-placed-success'));
 
