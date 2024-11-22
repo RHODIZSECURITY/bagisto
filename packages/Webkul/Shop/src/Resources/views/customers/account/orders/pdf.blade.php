@@ -10,7 +10,7 @@
 
         @php
             $fontPath = [];
-            
+
             $fontFamily = [
                 'regular' => 'Arial, sans-serif',
                 'bold'    => 'Arial, sans-serif',
@@ -26,7 +26,7 @@
                     'regular' => asset('fonts/NotoSansSC-Regular.ttf'),
                     'bold'    => asset('fonts/NotoSansSC-Bold.ttf'),
                 ];
-                
+
                 $fontFamily = [
                     'regular' => 'Noto Sans SC',
                     'bold'    => 'Noto Sans SC Bold',
@@ -36,7 +36,7 @@
                     'regular' => asset('fonts/NotoSansJP-Regular.ttf'),
                     'bold'    => asset('fonts/NotoSansJP-Bold.ttf'),
                 ];
-                
+
                 $fontFamily = [
                     'regular' => 'Noto Sans JP',
                     'bold'    => 'Noto Sans JP Bold',
@@ -46,7 +46,7 @@
                     'regular' => asset('fonts/Hind-Regular.ttf'),
                     'bold'    => asset('fonts/Hind-Bold.ttf'),
                 ];
-                
+
                 $fontFamily = [
                     'regular' => 'Hind',
                     'bold'    => 'Hind Bold',
@@ -56,7 +56,7 @@
                     'regular' => asset('fonts/NotoSansBengali-Regular.ttf'),
                     'bold'    => asset('fonts/NotoSansBengali-Bold.ttf'),
                 ];
-                
+
                 $fontFamily = [
                     'regular' => 'Noto Sans Bengali',
                     'bold'    => 'Noto Sans Bengali Bold',
@@ -66,7 +66,7 @@
                     'regular' => asset('fonts/NotoSansSinhala-Regular.ttf'),
                     'bold'    => asset('fonts/NotoSansSinhala-Bold.ttf'),
                 ];
-                
+
                 $fontFamily = [
                     'regular' => 'Noto Sans Sinhala',
                     'bold'    => 'Noto Sans Sinhala Bold',
@@ -82,7 +82,7 @@
                     font-family: {{ $fontFamily['regular'] }};
                 }
             @endif
-            
+
             @if (! empty($fontPath['bold']))
                 @font-face {
                     src: url({{ $fontPath['bold'] }}) format('truetype');
@@ -90,7 +90,7 @@
                     font-style: bold;
                 }
             @endif
-            
+
             * {
                 margin: 0;
                 padding: 0;
@@ -153,7 +153,7 @@
                 border-collapse: separate;
                 margin-bottom: 16px;
             }
-            
+
             table thead th {
                 background-color: #E9EFFC;
                 color: #000DBB;
@@ -247,7 +247,7 @@
                             @if (core()->getConfigData('sales.invoice_settings.pdf_print_outs.order_id'))
                                 <td style="width: 50%; padding: 2px 18px;border:none;">
                                     <b>
-                                        @lang('shop::app.customers.account.orders.invoice-pdf.order-id'): 
+                                        @lang('shop::app.customers.account.orders.invoice-pdf.order-id'):
                                     </b>
 
                                     <span>
@@ -256,7 +256,7 @@
                                 </td>
                             @endif
                         </tr>
-                        
+
                         <tr>
                             <td style="width: 50%; padding: 2px 18px;border:none;">
                                 <b>
@@ -369,7 +369,7 @@
                                     <div>@lang('shop::app.customers.account.orders.invoice-pdf.contact'): {{ $invoice->order->billing_address->phone }}</div>
                                 </td>
                             @endif
-                            
+
                             @if ($invoice->order->shipping_address)
                                 <td style="width: 50%">
                                     <div>{{ $invoice->order->shipping_address->company_name ?? '' }}<div>
@@ -419,7 +419,7 @@
                                 @if (! empty($additionalDetails))
                                     <div class="row small-text">
                                         <span>{{ $additionalDetails['title'] }}:</span>
-                                        
+
                                         <span>{{ $additionalDetails['value'] }}</span>
                                     </div>
                                 @endif
@@ -485,10 +485,10 @@
                                             {!! core()->formatBasePrice($item->base_price_incl_tax, true) !!}
                                         @elseif (core()->getConfigData('sales.taxes.sales.display_prices') == 'both')
                                             {!! core()->formatBasePrice($item->base_price_incl_tax, true) !!}
-                                            
+
                                             <div class="small-text">
                                                 @lang('shop::app.customers.account.orders.invoice-pdf.excl-tax')
-                                                
+
                                                 <span>
                                                     {{ core()->formatPrice($item->base_price) }}
                                                 </span>
@@ -507,10 +507,10 @@
                                             {!! core()->formatBasePrice($item->base_total_incl_tax, true) !!}
                                         @elseif (core()->getConfigData('sales.taxes.sales.display_subtotal') == 'both')
                                             {!! core()->formatBasePrice($item->base_total_incl_tax, true) !!}
-                                            
+
                                             <div class="small-text">
                                                 @lang('shop::app.customers.account.orders.invoice-pdf.excl-tax')
-                                                
+
                                                 <span>
                                                     {{ core()->formatPrice($item->base_total) }}
                                                 </span>
@@ -541,7 +541,7 @@
                                     <td>-</td>
                                     <td>{!! core()->formatBasePrice($invoice->base_sub_total_incl_tax, true) !!}</td>
                                 </tr>
-                                
+
                                 <tr>
                                     <td>@lang('shop::app.customers.account.orders.invoice-pdf.subtotal-excl-tax')</td>
                                     <td>-</td>
@@ -555,6 +555,12 @@
                                 </tr>
                             @endif
 
+                            <tr>
+                                <td>@lang('shop::app.customers.account.orders.invoice-pdf.tax')</td>
+                                <td>-</td>
+                                <td>{!! core()->formatBasePrice($invoice->base_tax_amount, true) !!}</td>
+                            </tr>
+
                             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                 <tr>
                                     <td>@lang('shop::app.customers.account.orders.invoice-pdf.shipping-handling')</td>
@@ -567,7 +573,7 @@
                                     <td>-</td>
                                     <td>{!! core()->formatBasePrice($invoice->base_shipping_amount_incl_tax, true) !!}</td>
                                 </tr>
-                                
+
                                 <tr>
                                     <td>@lang('shop::app.customers.account.orders.invoice-pdf.shipping-handling-excl-tax')</td>
                                     <td>-</td>
@@ -580,12 +586,6 @@
                                     <td>{!! core()->formatBasePrice($invoice->base_shipping_amount, true) !!}</td>
                                 </tr>
                             @endif
-
-                            <tr>
-                                <td>@lang('shop::app.customers.account.orders.invoice-pdf.tax')</td>
-                                <td>-</td>
-                                <td>{!! core()->formatBasePrice($invoice->base_tax_amount, true) !!}</td>
-                            </tr>
 
                             <tr>
                                 <td>@lang('shop::app.customers.account.orders.invoice-pdf.discount')</td>

@@ -697,7 +697,7 @@
                                         </div>
                                     @endif
                                 @endif
-                       
+
                                 @if ($order->base_discount_amount > 0)
                                     <div class="flex w-full justify-between gap-x-5">
                                         <p class="text-zinc-500">
@@ -928,6 +928,16 @@
                                             </div>
                                         @endif
 
+                                        <div class="flex w-full justify-between gap-x-5">
+                                            <p class="text-zinc-500">
+                                                @lang('shop::app.customers.account.orders.view.invoices.tax')
+                                            </p>
+
+                                            <p>
+                                                {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
+                                            </p>
+                                        </div>
+
                                         @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                             <div class="flex w-full justify-between gap-x-5">
                                                 <p class="text-zinc-500">
@@ -981,16 +991,6 @@
                                                 </p>
                                             </div>
                                         @endif
-
-                                        <div class="flex w-full justify-between gap-x-5">
-                                            <p class="text-zinc-500">
-                                                @lang('shop::app.customers.account.orders.view.invoices.tax')
-                                            </p>
-
-                                            <p>
-                                                {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
-                                            </p>
-                                        </div>
 
                                         <div class="flex w-full justify-between gap-x-5 font-semibold">
                                             <p class="text-zinc-500">
@@ -1156,6 +1156,14 @@
                                                 </div>
                                             @endif
 
+                                            <div class="flex w-full justify-between gap-x-5">
+                                                @lang('shop::app.customers.account.orders.view.invoices.tax')
+
+                                                <p>
+                                                    {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
+                                                </p>
+                                            </div>
+
                                             @if (core()->getConfigData('sales.taxes.sales.display_shipping_amount') == 'including_tax')
                                                 <div class="flex w-full justify-between gap-x-5">
                                                     @lang('shop::app.customers.account.orders.view.invoices.shipping-handling')
@@ -1189,14 +1197,6 @@
                                                     </p>
                                                 </div>
                                             @endif
-
-                                            <div class="flex w-full justify-between gap-x-5">
-                                                @lang('shop::app.customers.account.orders.view.invoices.tax')
-
-                                                <p>
-                                                    {{ core()->formatPrice($invoice->tax_amount, $order->order_currency_code) }}
-                                                </p>
-                                            </div>
 
                                             <div class="flex w-full justify-between gap-x-5 font-semibold">
                                                 @lang('shop::app.customers.account.orders.view.invoices.grand-total')
@@ -1854,7 +1854,7 @@
                         </div>
                     @endif
 
-                    <!-- Biiling Address -->
+                    <!-- Billing Address -->
                     @if ($order->billing_address)
                         <div class="text-sm font-medium text-zinc-500">
                             @lang('shop::app.customers.account.orders.view.billing-address')
@@ -1913,7 +1913,7 @@
 
             <!-- Desktop View -->
             <div class="mt-11 flex flex-wrap justify-between gap-x-11 gap-y-8 border-t border-zinc-200 pt-7 max-md:hidden">
-                <!-- Biiling Address -->
+                <!-- Billing Address -->
                 @if ($order->billing_address)
                     <div class="grid max-w-[200px] gap-4 max-868:w-full max-868:max-w-full max-md:max-w-full max-md:gap-2">
                         <p class="text-base text-zinc-500 max-md:text-lg max-md:text-black">

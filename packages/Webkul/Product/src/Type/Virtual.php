@@ -70,7 +70,7 @@ class Virtual extends AbstractType
      */
     public function getMaximumPrice()
     {
-        return $this->product->price;
+        return $this->increment($this->product->price);
     }
 
     /**

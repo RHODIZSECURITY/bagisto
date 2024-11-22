@@ -31,6 +31,13 @@ abstract class AbstractType
     protected $customerGroup;
 
     /**
+     * Product price increment will be applied or not.
+     *
+     * @var bool
+     */
+    protected $applyPriceIncrement = true;
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -89,9 +96,9 @@ abstract class AbstractType
     {
         return [
             'min_price'         => ($minPrice = $this->getMinimalPrice()) ?? 0,
-            'regular_min_price' => $this->product->price ?? 0,
+            'regular_min_price' => $this->increment($this->product->price) ?? 0,
             'max_price'         => $minPrice ?? 0,
-            'regular_max_price' => $this->product->price ?? 0,
+            'regular_max_price' => $this->increment($this->product->price) ?? 0,
             'product_id'        => $this->product->id,
             'channel_id'        => $this->channel->id,
             'customer_group_id' => $this->customerGroup->id,
@@ -115,7 +122,7 @@ abstract class AbstractType
             && empty($rulePrice)
             && $customerGroupPrice == $this->product->price
         ) {
-            return $this->product->price;
+            return $this->increment($this->product->price) ;
         }
 
         if (! (float) $this->product->special_price) {
@@ -150,7 +157,7 @@ abstract class AbstractType
             }
         }
 
-        return min($discountedPrice, $customerGroupPrice);
+        return $this->increment(min($discountedPrice, $customerGroupPrice));
     }
 
     /**
@@ -165,7 +172,7 @@ abstract class AbstractType
             ->prices($this->product, $this->customerGroup->id);
 
         if ($customerGroupPrices->isEmpty()) {
-            return $this->product->price;
+            return $this->increment($this->product->price);
         }
 
         $lastQty = 1;
@@ -207,7 +214,7 @@ abstract class AbstractType
             }
         }
 
-        return $lastPrice;
+        return $this->increment($lastPrice);
     }
 
     /**
@@ -222,5 +229,21 @@ abstract class AbstractType
             ->where('channel_id', $this->channel->id)
             ->where('rule_date', Carbon::now()->format('Y-m-d'))
             ->first();
+    }
+
+    public function increment($value)
+    {
+        if ($this->applyPriceIncrement) {
+            $stripe_increment_percent = config('app.stripe_increment_percent', '2.9');
+            $stripe_increment_fixed = config('app.stripe_increment_fixed', '0.30');
+
+            $incrementPercent = round(($value*$stripe_increment_percent)/100 ,2);
+
+            $incrementFixed = $stripe_increment_fixed;
+
+            return $value + $incrementPercent + $incrementFixed;
+        }
+
+        return $value;
     }
 }

@@ -90,6 +90,13 @@ abstract class AbstractType
     protected $isChildrenCalculated = false;
 
     /**
+     * Product price increment will be applied or not.
+     *
+     * @var bool
+     */
+    protected $applyPriceIncrement = true;
+
+    /**
      * Skip attribute for simple product type.
      *
      * @var array
@@ -1020,7 +1027,7 @@ abstract class AbstractType
 
         $lastQty = 1;
 
-        $lastPrice = $this->increment($product->price);
+        $lastPrice = $product->price;
 
         $lastCustomerGroupId = null;
 
@@ -1046,7 +1053,7 @@ abstract class AbstractType
                     $customerGroupPrice->value >= 0
                     && $customerGroupPrice->value <= 100
                 ) {
-                    $lastPrice = $this->increment($product->price) - ($this->increment($product->price) * $customerGroupPrice->value) / 100;
+                    $lastPrice = $product->price - ($product->price * $customerGroupPrice->value) / 100;
 
                     $lastQty = $customerGroupPrice->qty;
 
@@ -1066,18 +1073,22 @@ abstract class AbstractType
             }
         }
 
-        return $lastPrice;
+        return $this->increment($lastPrice);
     }
 
     public function increment($value)
     {
-        $stripe_increment_percent = config('app.stripe_increment_percent', '2.9');
-        $stripe_increment_fixed = config('app.stripe_increment_fixed', '0.30');
+        if ($this->applyPriceIncrement) {
+            $stripe_increment_percent = config('app.stripe_increment_percent', '2.9');
+            $stripe_increment_fixed = config('app.stripe_increment_fixed', '0.30');
 
-        $incrementPercent = ($value*$stripe_increment_percent)/100;
+            $incrementPercent = round(($value*$stripe_increment_percent)/100 ,2);
 
-        $incrementFixed = $stripe_increment_fixed;
+            $incrementFixed = $stripe_increment_fixed;
 
-        return $value + $incrementPercent + $incrementFixed;
+            return $value + $incrementPercent + $incrementFixed;
+        }
+
+        return $value;
     }
 }
