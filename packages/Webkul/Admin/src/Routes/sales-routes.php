@@ -95,6 +95,8 @@ Route::prefix('sales')->group(function () {
         Route::post('{id}/items', 'storeItem')->name('admin.sales.cart.items.store');
 
         Route::put('{id}/items', 'updateItem')->name('admin.sales.cart.items.update');
+        
+        Route::put('{id}/taxes', 'updateTaxes')->name('admin.sales.cart.items.taxes');
 
         Route::delete('{id}/items', 'destroyItem')->name('admin.sales.cart.items.destroy');
 

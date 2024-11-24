@@ -16,6 +16,7 @@ use Webkul\Product\Repositories\ProductImageRepository;
 use Webkul\Product\Repositories\ProductInventoryRepository;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Product\Repositories\ProductVideoRepository;
+use Rhodiz\Config\Helpers\SessionHelper;
 
 abstract class AbstractType
 {
@@ -90,6 +91,20 @@ abstract class AbstractType
     protected $isChildrenCalculated = false;
 
     /**
+     * Stripe price increment in percent.
+     *
+     * @var float
+     */
+    protected $stripeIncrementPercent = 0;
+
+    /**
+     * Stripe price increment fixed value.
+     *
+     * @var float
+     */
+    protected $stripeIncrementFixed = 0;
+
+    /**
      * Product price increment will be applied or not.
      *
      * @var bool
@@ -131,7 +146,12 @@ abstract class AbstractType
         protected ProductImageRepository $productImageRepository,
         protected ProductVideoRepository $productVideoRepository,
         protected ProductCustomerGroupPriceRepository $productCustomerGroupPriceRepository
-    ) {}
+    ) {
+        $this->stripeIncrementPercent = config('app.stripe_increment_percent');
+        $this->stripeIncrementFixed = config('app.stripe_increment_fixed');
+
+        $this->applyPriceIncrement = SessionHelper::getValue('apply_price_increment') === false ? false : true;
+    }
 
     /**
      * Create product.
@@ -1079,12 +1099,10 @@ abstract class AbstractType
     public function increment($value)
     {
         if ($this->applyPriceIncrement) {
-            $stripe_increment_percent = config('app.stripe_increment_percent', '2.9');
-            $stripe_increment_fixed = config('app.stripe_increment_fixed', '0.30');
 
-            $incrementPercent = round(($value*$stripe_increment_percent)/100 ,2);
+            $incrementPercent = round(( $value * $this->stripeIncrementPercent ) / 100 ,2);
 
-            $incrementFixed = $stripe_increment_fixed;
+            $incrementFixed = $this->stripeIncrementFixed;
 
             return $value + $incrementPercent + $incrementFixed;
         }

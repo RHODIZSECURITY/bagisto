@@ -19,6 +19,7 @@ use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Shipping\Facades\Shipping;
 use Webkul\Tax\Facades\Tax;
 use Webkul\Tax\Repositories\TaxCategoryRepository;
+use Rhodiz\Config\Helpers\SessionHelper;
 
 class Cart
 {
@@ -45,6 +46,13 @@ class Cart
     const TAX_CALCULATION_BASED_ON_SHIPPING_ADDRESS = 'shipping_address';
 
     /**
+     * Apply taxes or not.
+     *
+     * @var bool
+     */
+    protected $applyTaxes = true;
+
+    /**
      * Create a new class instance.
      *
      * @return void
@@ -59,6 +67,8 @@ class Cart
         protected CustomerAddressRepository $customerAddressRepository
     ) {
         $this->initCart();
+
+        $this->applyTaxes = SessionHelper::getValue('apply_taxes') === false ? false : true;
     }
 
     /**
@@ -334,45 +344,49 @@ class Cart
      */
     public function updateItems(array $data): bool|\Exception
     {
-        foreach ($data['qty'] as $itemId => $quantity) {
-            $item = $this->cartItemRepository->find($itemId);
+        if ( isset( $data['qty'] ) ) {
+            foreach ($data['qty'] as $itemId => $quantity) {
+                $item = $this->cartItemRepository->find($itemId);
 
-            if (! $item) {
-                continue;
+                if (! $item) {
+                    continue;
+                }
+
+                if (! $item->product->status) {
+                    throw new \Exception(__('shop::app.checkout.cart.inactive'));
+                }
+
+                if ($quantity <= 0) {
+                    $this->removeItem($itemId);
+
+                    throw new \Exception(__('shop::app.checkout.cart.illegal'));
+                }
+
+                $item->quantity = $quantity;
+
+                if (! $this->isItemHaveQuantity($item)) {
+                    throw new \Exception(__('shop::app.checkout.cart.inventory-warning'));
+                }
+
+                Event::dispatch('checkout.cart.update.before', $item);
+
+                $this->cartItemRepository->update([
+                    'quantity'            => $quantity,
+                    'total'               => $total = core()->convertPrice($item->price_incl_tax * $quantity),
+                    'total_incl_tax'      => $total,
+                    'base_total'          => $item->price_incl_tax * $quantity,
+                    'base_total_incl_tax' => $item->base_price_incl_tax * $quantity,
+                    'total_weight'        => $item->weight * $quantity,
+                    'base_total_weight'   => $item->weight * $quantity,
+                ], $itemId);
+
+                Event::dispatch('checkout.cart.update.after', $item);
             }
-
-            if (! $item->product->status) {
-                throw new \Exception(__('shop::app.checkout.cart.inactive'));
-            }
-
-            if ($quantity <= 0) {
-                $this->removeItem($itemId);
-
-                throw new \Exception(__('shop::app.checkout.cart.illegal'));
-            }
-
-            $item->quantity = $quantity;
-
-            if (! $this->isItemHaveQuantity($item)) {
-                throw new \Exception(__('shop::app.checkout.cart.inventory-warning'));
-            }
-
-            Event::dispatch('checkout.cart.update.before', $item);
-
-            $this->cartItemRepository->update([
-                'quantity'            => $quantity,
-                'total'               => $total = core()->convertPrice($item->price_incl_tax * $quantity),
-                'total_incl_tax'      => $total,
-                'base_total'          => $item->price_incl_tax * $quantity,
-                'base_total_incl_tax' => $item->base_price_incl_tax * $quantity,
-                'total_weight'        => $item->weight * $quantity,
-                'base_total_weight'   => $item->weight * $quantity,
-            ], $itemId);
-
-            Event::dispatch('checkout.cart.update.after', $item);
         }
 
-        $this->collectTotals();
+        if ($this->cart->all_items->count()) {
+            $this->collectTotals();
+        }
 
         return true;
     }
@@ -1023,6 +1037,21 @@ class Cart
 
             $item->tax_percent = $item->tax_amount = $item->base_tax_amount = 0;
 
+            if ( $this->applyTaxes == false ) {
+
+                $item->price_incl_tax = $item->price;
+                $item->base_price_incl_tax = $item->base_price;
+
+                $item->total_incl_tax = $item->total;
+                $item->base_total_incl_tax = $item->base_total;
+
+                $item->save();
+
+                $this->cart->items->put($key, $item);
+
+                continue;
+            }
+
             Tax::isTaxApplicableInCurrentAddress($taxCategories[$taxCategoryId], $address, function ($rate) use ($item, $taxCategoryId) {
                 $item->applied_tax_rate = $rate->identifier;
 
@@ -1078,6 +1107,10 @@ class Cart
      */
     public function calculateShippingTax(): void
     {
+        if ( $this->applyTaxes == false ) {
+            return;
+        }
+
         if (! $this->cart) {
             return;
         }

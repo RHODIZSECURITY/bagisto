@@ -19,6 +19,7 @@ use Webkul\Sales\Repositories\OrderRepository;
 use Webkul\Sales\Repositories\InvoiceRepository;
 use Webkul\Sales\Transformers\OrderResource;
 use Webkul\Sales\Transformers\OrderResource2;
+use Rhodiz\Config\Helpers\SessionHelper;
 
 class OrderController extends Controller
 {
@@ -84,11 +85,12 @@ class OrderController extends Controller
             return redirect()->route('admin.sales.orders.index');
         }
 
-        $addresses = AddressResource::collection($cart->customer->addresses);
-
         $cart = new CartResource($cart);
 
-        return view('admin::sales.orders.create2', compact('cart', 'addresses'));
+        $pay_tax_checked = SessionHelper::getValue('apply_price_increment') == false ? false : true;
+        $sales_tax_checked = SessionHelper::getValue('apply_taxes') == false ? false : true;
+
+        return view('admin::sales.orders.create2', compact('cart', 'pay_tax_checked', 'sales_tax_checked'));
     }
 
     /**

@@ -12,7 +12,7 @@
     >
         <!-- Customer Edit Button -->
         @if (bouncer()->hasPermission('customers.customers.edit'))
-            <div 
+            <div
                 class="flex cursor-pointer items-center justify-between gap-1.5 px-2.5 text-blue-600 transition-all hover:underline"
                 @click="$refs.customerEditModal.toggle()"
             >
@@ -36,9 +36,9 @@
                     <x-slot:header>
                         <p class="text-lg font-bold text-gray-800 dark:text-white">
                             @lang('admin::app.customers.customers.view.edit.title')
-                        </p>    
+                        </p>
                     </x-slot>
-    
+
                     <!-- Modal Content -->
                     <x-slot:content>
                         {!! view_render_event('bagisto.admin.customers.customers.view.edit.before', ['customer' => $customer]) !!}
@@ -49,46 +49,46 @@
                                 <x-admin::form.control-group.label class="required">
                                     @lang('admin::app.customers.customers.view.edit.first-name')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="first_name" 
-                                    id="first_name" 
+                                    name="first_name"
+                                    id="first_name"
                                     ::value="customer.first_name"
                                     rules="required"
                                     :label="trans('admin::app.customers.customers.view.edit.first-name')"
                                     :placeholder="trans('admin::app.customers.customers.view.edit.first-name')"
                                 />
-            
+
                                 <x-admin::form.control-group.error control-name="first_name" />
                             </x-admin::form.control-group>
-            
+
                             <!--Last Name -->
                             <x-admin::form.control-group class="mb-2.5 w-full">
                                 <x-admin::form.control-group.label class="required">
                                     @lang('admin::app.customers.customers.view.edit.last-name')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="text"
-                                    name="last_name" 
+                                    name="last_name"
                                     ::value="customer.last_name"
                                     id="last_name"
                                     rules="required"
                                     :label="trans('admin::app.customers.customers.view.edit.last-name')"
                                     :placeholder="trans('admin::app.customers.customers.view.edit.last-name')"
                                 />
-            
+
                                 <x-admin::form.control-group.error control-name="last_name" />
                             </x-admin::form.control-group>
                         </div>
-            
+
                         <!-- Email -->
                         <x-admin::form.control-group>
                             <x-admin::form.control-group.label class="required">
                                 @lang('admin::app.customers.customers.view.edit.email')
                             </x-admin::form.control-group.label>
-            
+
                             <x-admin::form.control-group.control
                                 type="email"
                                 name="email"
@@ -98,17 +98,17 @@
                                 :label="trans('admin::app.customers.customers.view.edit.email')"
                                 placeholder="email@example.com"
                             />
-            
+
                             <x-admin::form.control-group.error control-name="email" />
                         </x-admin::form.control-group>
-            
+
                         <div class="flex gap-4 max-sm:flex-wrap">
                             <!-- Phone -->
                             <x-admin::form.control-group class="mb-2.5 w-full">
                                 <x-admin::form.control-group.label>
                                     @lang('admin::app.customers.customers.view.edit.contact-number')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="text"
                                     name="phone"
@@ -118,25 +118,25 @@
                                     :label="trans('admin::app.customers.customers.view.edit.contact-number')"
                                     :placeholder="trans('admin::app.customers.customers.view.edit.contact-number')"
                                 />
-            
+
                                 <x-admin::form.control-group.error control-name="phone" />
                             </x-admin::form.control-group>
-            
+
                             <!-- Date -->
                             <x-admin::form.control-group class="mb-2.5 w-full">
                                 <x-admin::form.control-group.label>
                                     @lang('admin::app.customers.customers.view.edit.date-of-birth')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="date"
-                                    name="date_of_birth" 
+                                    name="date_of_birth"
                                     id="dob"
                                     ::value="customer.date_of_birth"
                                     :label="trans('admin::app.customers.customers.view.edit.date-of-birth')"
                                     :placeholder="trans('admin::app.customers.customers.view.edit.date-of-birth')"
                                 />
-                                
+
                                 <x-admin::form.control-group.error control-name="date_of_birth" />
                             </x-admin::form.control-group>
                         </div>
@@ -147,7 +147,7 @@
                                 <x-admin::form.control-group.label class="required">
                                     @lang('admin::app.customers.customers.view.edit.gender')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="select"
                                     name="gender"
@@ -159,42 +159,42 @@
                                     <option value="Male">
                                         @lang('admin::app.customers.customers.view.edit.male')
                                     </option>
-            
+
                                     <option value="Female">
                                         @lang('admin::app.customers.customers.view.edit.female')
                                     </option>
-            
+
                                     <option value="Other">
                                         @lang('admin::app.customers.customers.view.edit.other')
                                     </option>
                                 </x-admin::form.control-group.control>
-            
+
                                 <x-admin::form.control-group.error control-name="gender" />
                             </x-admin::form.control-group>
-            
+
                             <!-- Customer Group -->
                             <x-admin::form.control-group class="w-full">
                                 <x-admin::form.control-group.label>
                                     @lang('admin::app.customers.customers.view.edit.customer-group')
                                 </x-admin::form.control-group.label>
-            
+
                                 <x-admin::form.control-group.control
                                     type="select"
                                     name="customer_group_id"
                                     ::value="customer.customer_group_id"
-                                    id="customerGroup" 
+                                    id="customerGroup"
                                     :label="trans('admin::app.customers.customers.view.edit.customer-group')"
                                 >
                                     <option
-                                        v-for="group in groups" 
+                                        v-for="group in groups"
                                         :value="group.id"
-                                    > 
-                                        @{{ group.name }} 
+                                    >
+                                        @{{ group.name }}
                                     </option>
                                 </x-admin::form.control-group.control>
                             </x-admin::form.control-group>
                         </div>
-            
+
                         <div class="flex gap-60 max-sm:flex-wrap">
                             <!-- Customer Status -->
                             <x-admin::form.control-group class="!mb-0">
@@ -207,7 +207,7 @@
                                     name="status"
                                     value="0"
                                 />
-                                
+
                                 <x-admin::form.control-group.control
                                     type="switch"
                                     name="status"
@@ -228,7 +228,7 @@
                                     name="is_suspended"
                                     value="0"
                                 />
-                                
+
                                 <x-admin::form.control-group.control
                                     type="switch"
                                     name="is_suspended"
@@ -238,7 +238,7 @@
                                 />
                             </x-admin::form.control-group>
                         </div>
-                        
+
                         {!! view_render_event('bagisto.admin.customers.customers.view.edit.after', ['customer' => $customer]) !!}
                     </x-slot>
 

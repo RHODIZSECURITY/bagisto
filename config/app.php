@@ -290,6 +290,6 @@ return [
     | Here you may specify the stripe price increment values.
     |
     */
-    'stripe_increment_percent' => env('STRIPE_INCREMENT_PERCENT', '0.30'),
-    'stripe_increment_fixed'   => env('STRIPE_INCREMENT_FIXED', '2.9'),
+    'stripe_increment_percent' => env('STRIPE_INCREMENT_PERCENT', '2.90'),
+    'stripe_increment_fixed'   => env('STRIPE_INCREMENT_FIXED', '0.30'),
 ];

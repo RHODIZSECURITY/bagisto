@@ -15,6 +15,7 @@ use Webkul\Customer\Repositories\CustomerRepository;
 use Webkul\Payment\Facades\Payment;
 use Webkul\Product\Repositories\ProductRepository;
 use Webkul\Shipping\Facades\Shipping;
+use Rhodiz\Config\Helpers\SessionHelper;
 
 class CartController extends Controller
 {
@@ -168,6 +169,39 @@ class CartController extends Controller
                 'data'    => new CartResource(Cart::getCart()),
                 'message' => trans('admin::app.sales.orders.create.cart.success-update'),
             ]);
+        } catch (\Exception $exception) {
+            return new JsonResource([
+                'message' => $exception->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Updates the taxes of the cart.
+     */
+    public function updateTaxes(int $cartId): JsonResource
+    {
+        $payTax = request()->input('pay_tax');
+        $salesTax = request()->input('sales_tax');
+
+        // Eliminar el valor de la sesión
+        SessionHelper::setValue('apply_price_increment', $payTax, 3600);
+
+        SessionHelper::setValue('apply_taxes', $salesTax, 3600);
+
+        $cart = $this->cartRepository->findOrFail($cartId);
+
+        Cart::setCart($cart);
+
+        try {
+
+            Cart::updateItems(request()->input());
+
+            return new JsonResource([
+                'data'    => new CartResource(Cart::getCart()),
+                'message' => 'Taxes Actualizados Correctamente',
+            ]);
+
         } catch (\Exception $exception) {
             return new JsonResource([
                 'message' => $exception->getMessage(),

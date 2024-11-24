@@ -2,6 +2,7 @@
 
 <v-cart-summary
     :cart="cart"
+    @cart-item-updated="setCart($event); stepReset()"
 ></v-cart-summary>
 
 {!! view_render_event('bagisto.admin.sales.order.create.cart.summary.after') !!}
@@ -26,6 +27,38 @@
                 <div class="grid gap-4">
                     <!-- Sub Total -->
                     {!! view_render_event('bagisto.admin.sales.order.create.left_component.summary.sub_total.before') !!}
+
+                    <div style="margin: 20px auto; max-width: 300px; text-align: left; display: flex; gap: 20px;">
+                        <!-- Checkbox for Pay Tax -->
+                        <label style="display: flex; align-items: center;">
+
+                            <input
+                                type="checkbox"
+                                style="margin-right: 5px; transform: scale(1.1);"
+                                name="pay_tax"
+                                id="pay_tax"
+                                {{ $pay_tax_checked ? "checked" : "" }}
+                                @click="updateCart()"
+                            />
+
+                            <span style="font-size: 14px; color: #333;">Pay Tax</span>
+                        </label>
+
+                        <!-- Checkbox for Sales Tax -->
+                        <label style="display: flex; align-items: center;">
+
+                            <input
+                                type="checkbox"
+                                style="margin-right: 5px; transform: scale(1.1);"
+                                name="sales_tax"
+                                id="sales_tax"
+                                {{ $sales_tax_checked ? "checked" : "" }}
+                                @click="updateCart()"
+                            />
+
+                            <span style="font-size: 14px; color: #333;">Sales Tax</span>
+                        </label>
+                    </div>
 
                     <template v-if="displayTax.subtotal == 'including_tax'">
                         <div class="row grid grid-cols-2 grid-rows-1 justify-between gap-4 text-right">
@@ -236,7 +269,33 @@
 
                             this.$emitter.emit('add-flash', { type: 'error', message: error.response.data.message });
                         });
-                }
+                },
+
+                updateCart() {
+
+                    const checkboxPayTax   = document.getElementById('pay_tax');
+                    const checkboxSalesTax = document.getElementById('sales_tax');
+
+                    this.isUpdating = true;
+
+                    let params = {
+                        pay_tax: checkboxPayTax.checked,
+                        sales_tax: checkboxSalesTax.checked
+                    };
+
+                    this.$axios.put("{{ route('admin.sales.cart.items.taxes', $cart->id) }}", params)
+                        .then(response => {
+                            this.$emit('cart-item-updated', response.data.data);
+
+                            this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+
+                            this.isUpdating = false;
+
+                        })
+                        .catch(error => {
+                            this.isUpdating = false;
+                        });
+                },
             }
         });
     </script>
