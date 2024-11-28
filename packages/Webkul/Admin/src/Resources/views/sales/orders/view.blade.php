@@ -58,8 +58,10 @@
                 @include('admin::sales.invoices.create')
             @endif
 
+
             @if (
-                $order->canShip()
+                $order->status !== 'completed'
+                && $order->canShip()
                 && bouncer()->hasPermission('sales.shipments.create')
             )
                 @include('admin::sales.shipments.create')
