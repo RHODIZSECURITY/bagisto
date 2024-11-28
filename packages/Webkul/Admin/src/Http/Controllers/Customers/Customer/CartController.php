@@ -45,6 +45,8 @@ class CartController extends Controller
      */
     public function items(int $id): JsonResource
     {
+        //Punto Importante
+
         $cartItems = $this->cartItemRepository
             ->with('product')
             ->select('cart_items.*')

@@ -47,7 +47,7 @@ class Simple extends AbstractType
      */
     public function getMaximumPrice()
     {
-        return $this->increment($this->product->price);
+        return $this->product->price;
     }
 
     /**

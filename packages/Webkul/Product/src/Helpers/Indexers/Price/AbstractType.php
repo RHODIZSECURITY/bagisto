@@ -116,9 +116,9 @@ abstract class AbstractType
     {
         return [
             'min_price'         => ($minPrice = $this->getMinimalPrice()) ?? 0,
-            'regular_min_price' => $this->increment($this->product->price) ?? 0,
+            'regular_min_price' => $this->product->price ?? 0,
             'max_price'         => $minPrice ?? 0,
-            'regular_max_price' => $this->increment($this->product->price) ?? 0,
+            'regular_max_price' => $this->product->price ?? 0,
             'product_id'        => $this->product->id,
             'channel_id'        => $this->channel->id,
             'customer_group_id' => $this->customerGroup->id,
@@ -142,7 +142,7 @@ abstract class AbstractType
             && empty($rulePrice)
             && $customerGroupPrice == $this->product->price
         ) {
-            return $this->increment($this->product->price) ;
+            return $this->product->price;
         }
 
         if (! (float) $this->product->special_price) {
@@ -177,7 +177,7 @@ abstract class AbstractType
             }
         }
 
-        return $this->increment(min($discountedPrice, $customerGroupPrice));
+        return min($discountedPrice, $customerGroupPrice);
     }
 
     /**
@@ -192,7 +192,7 @@ abstract class AbstractType
             ->prices($this->product, $this->customerGroup->id);
 
         if ($customerGroupPrices->isEmpty()) {
-            return $this->increment($this->product->price);
+            return $this->product->price;
         }
 
         $lastQty = 1;
@@ -234,7 +234,7 @@ abstract class AbstractType
             }
         }
 
-        return $this->increment($lastPrice);
+        return $lastPrice;
     }
 
     /**

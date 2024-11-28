@@ -41,6 +41,8 @@ class Tax
     {
         $taxes = [];
 
+        //Aqui se devuelve un listado de taxes
+
         foreach ($that->items as $item) {
             $taxRate = $item->applied_tax_rate.' ('.(string) round((float) $item->tax_percent, self::TAX_RATE_PRECISION).'%)';
 
@@ -148,7 +150,6 @@ class Tax
             return;
         }
 
-        // dump($address);
         foreach ($taxRates as $rate) {
             if (
                 ! in_array(trim($rate->state), ['*', ''])

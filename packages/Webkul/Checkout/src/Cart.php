@@ -53,6 +53,27 @@ class Cart
     protected $applyTaxes = true;
 
     /**
+     * Stripe price increment in percent.
+     *
+     * @var float
+     */
+    protected $stripeIncrementPercent = 0;
+
+    /**
+     * Stripe price increment fixed value.
+     *
+     * @var float
+     */
+    protected $stripeIncrementFixed = 0;
+
+    /**
+     * Product price increment will be applied or not.
+     *
+     * @var bool
+     */
+    protected $applyPriceIncrement = true;
+
+    /**
      * Create a new class instance.
      *
      * @return void
@@ -69,6 +90,11 @@ class Cart
         $this->initCart();
 
         $this->applyTaxes = SessionHelper::getValue('apply_taxes') === false ? false : true;
+
+        $this->stripeIncrementPercent = config('app.stripe_increment_percent');
+        $this->stripeIncrementFixed = config('app.stripe_increment_fixed');
+
+        $this->applyPriceIncrement = SessionHelper::getValue('apply_price_increment') === false ? false : true;
     }
 
     /**
@@ -944,6 +970,9 @@ class Cart
 
                 $basePrice = ! is_null($item->custom_price) ? $item->custom_price : $itemBasePrice;
 
+                //Aqui se incrementa el precio.!!!
+                $basePrice = $this->increment($basePrice);
+
                 $price = core()->convertPrice($basePrice);
 
                 /**
@@ -1186,5 +1215,19 @@ class Cart
         $shippingRate->save();
 
         Event::dispatch('checkout.cart.calculate.shipping.tax.after', $this->cart);
+    }
+
+    public function increment($value)
+    {
+        if ($this->applyPriceIncrement) {
+
+            $incrementPercent = round(( $value * $this->stripeIncrementPercent ) / 100 ,2);
+
+            $incrementFixed = $this->stripeIncrementFixed;
+
+            return $value + $incrementPercent + $incrementFixed;
+        }
+
+        return $value;
     }
 }

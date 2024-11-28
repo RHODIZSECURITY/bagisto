@@ -604,10 +604,10 @@ abstract class AbstractType
     public function getMinimalPrice()
     {
         if (! $priceIndex = $this->getPriceIndex()) {
-            return $this->increment($this->product->price);
+            return $this->product->price;
         }
 
-        return $this->increment($priceIndex->min_price);
+        return $priceIndex->min_price;
     }
 
     /**
@@ -618,10 +618,10 @@ abstract class AbstractType
     public function getRegularMinimalPrice()
     {
         if (! $priceIndex = $this->getPriceIndex()) {
-            return $this->increment($this->product->price);
+            return $this->product->price;
         }
 
-        return $this->increment($priceIndex->regular_min_price);
+        return $priceIndex->regular_min_price;
     }
 
     /**
@@ -632,10 +632,10 @@ abstract class AbstractType
     public function getMaximumPrice()
     {
         if (! $priceIndex = $this->getPriceIndex()) {
-            return $this->increment($this->product->price);
+            return $this->product->price;
         }
 
-        return $this->increment($priceIndex->max_price);
+        return $priceIndex->max_price;
     }
 
     /**
@@ -646,10 +646,10 @@ abstract class AbstractType
     public function getRegularMaximumPrice()
     {
         if (! $priceIndex = $this->getPriceIndex()) {
-            return $this->increment($this->product->price);
+            return $this->product->price;
         }
 
-        return $this->increment($priceIndex->regular_max_price);
+        return $priceIndex->regular_max_price;
     }
 
     /**
@@ -732,14 +732,17 @@ abstract class AbstractType
      */
     public function getProductPrices()
     {
+        //Aqui es donde se devuelve los precios de los productos en el frontend
+        $this->applyPriceIncrement = true;
+
         return [
             'regular' => [
-                'price'           => core()->convertPrice($this->increment($this->product->price)),
-                'formatted_price' => core()->currency($this->increment($this->product->price)),
+                'price'           => core()->convertPrice($regularPrice = $this->increment($this->product->price)),
+                'formatted_price' => core()->currency($regularPrice),
             ],
 
             'final'   => [
-                'price'           => core()->convertPrice($minimalPrice = $this->getMinimalPrice()),
+                'price'           => core()->convertPrice($minimalPrice = $this->increment($this->getMinimalPrice())),
                 'formatted_price' => core()->currency($minimalPrice),
             ],
         ];
@@ -786,6 +789,7 @@ abstract class AbstractType
             return trans('product::app.checkout.cart.inventory-warning');
         }
 
+        //Aqui es donde se pudiera modificar para aumentar el precio al poner el producto en el carrito
         $price = $this->getFinalPrice();
 
         $products = [
@@ -993,8 +997,8 @@ abstract class AbstractType
 
         foreach ($customerGroupPrices as $customerGroupPrice) {
             if (
-                ! is_null($this->increment($this->product->special_price))
-                && $customerGroupPrice->value >= $this->increment($this->product->special_price)
+                ! is_null($this->product->special_price)
+                && $customerGroupPrice->value >= $this->product->special_price
             ) {
                 continue;
             }
@@ -1015,7 +1019,7 @@ abstract class AbstractType
     {
         $price = $this->getCustomerGroupPrice($this->product, $customerGroupPrice->qty);
 
-        $discount = number_format((($this->increment($this->product->price) - $price) * 100) / ($this->increment($this->product->price)), 2);
+        $discount = number_format((($this->product->price - $price) * 100) / $this->product->price, 2);
 
         $offerLines = trans('product::app.type.abstract.offers', [
             'qty'      => $customerGroupPrice->qty,
@@ -1042,7 +1046,7 @@ abstract class AbstractType
         $customerGroupPrices = $this->productCustomerGroupPriceRepository->prices($product, $customerGroup->id);
 
         if ($customerGroupPrices->isEmpty()) {
-            return $this->increment($product->price);
+            return $product->price;
         }
 
         $lastQty = 1;
@@ -1093,7 +1097,7 @@ abstract class AbstractType
             }
         }
 
-        return $this->increment($lastPrice);
+        return $lastPrice;
     }
 
     public function increment($value)

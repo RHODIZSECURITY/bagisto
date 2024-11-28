@@ -333,7 +333,7 @@ class Configurable extends AbstractType
      */
     public function getProductPrices()
     {
-        $minPrice = $this->getMinimalPrice();
+        $minPrice = $this->increment($this->getMinimalPrice());
 
         return [
             'regular' => [
